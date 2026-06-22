@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Как сделать скриншот на Mac, простая инструкция</title>
+<meta name="description" content="Пошагово и понятно: как сделать снимок экрана на Mac, выбрать область, сохранить и переслать. Для новичка.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16191f; --soft:#3d434e; --muted:#6b7280; --line:#e9e6df; --line-soft:#f0ede6;
+    --bg:#fbfaf7; --paper:#f5f2ea; --card:#ffffff;
+    --gold:#8f7327; --gold-deep:#6f5915; --gold-soft:#f4eeda; --gold-line:#e7dcb8;
+    --ok:#2f7d57; --ok-soft:#e9f3ec;
+    --warn:#a85a22; --warn-soft:#fbf0e5; --warn-line:#f0dcc4;
+    --info:#3a6691; --info-soft:#eaf1f8; --info-line:#d8e5f1;
+    --radius:18px; --radius-sm:12px;
+    --shadow:0 1px 2px rgba(20,23,31,.04),0 10px 30px rgba(20,23,31,.06);
+    --shadow-sm:0 1px 2px rgba(20,23,31,.05),0 4px 14px rgba(20,23,31,.05);
+    --maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:400 18px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;
+    padding:0 18px calc(72px + env(safe-area-inset-bottom));}
+  a{color:var(--gold-deep);text-underline-offset:3px;text-decoration-thickness:1.5px}
+
+  /* прогресс чтения */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--gold);z-index:50;transition:width .1s linear}
+
+  /* шапка */
+  header{padding:38px 0 6px}
+  .kicker{font-size:13.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(32px,7.4vw,48px);
+    line-height:1.06;margin:.34em 0 .3em;letter-spacing:-.012em}
+  .lead{color:var(--soft);font-size:20px;line-height:1.55;margin:0;max-width:58ch}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:7px 14px;font-size:14.5px;color:var(--soft);box-shadow:var(--shadow-sm)}
+  .chip svg{width:16px;height:16px;color:var(--gold)}
+
+  /* блоки-карточки */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:24px 24px}
+  .panel-result{background:linear-gradient(180deg,#fffdf6,#fff);border-color:var(--gold-line)}
+  .panel-title{display:flex;align-items:center;gap:11px;font-weight:600;font-size:15px;
+    letter-spacing:.04em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 14px}
+  .panel-title svg{width:22px;height:22px;flex:0 0 auto}
+  .stack{display:grid;gap:34px;margin-top:30px}
+  .stack>*{min-width:0}
+  .step .body,.body>*{min-width:0;max-width:100%}
+  .checklist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .checklist li{display:flex;gap:12px;align-items:flex-start;font-size:17.5px;color:var(--soft)}
+  .checklist li svg{width:22px;height:22px;flex:0 0 auto;color:var(--ok);margin-top:1px}
+
+  /* оглавление */
+  .toc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:8px 8px}
+  .toc>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:600;
+    display:flex;align-items:center;justify-content:space-between;border-radius:12px}
+  .toc>summary::-webkit-details-marker{display:none}
+  .toc>summary .chev{width:20px;height:20px;color:var(--muted);transition:transform .2s}
+  .toc[open]>summary .chev{transform:rotate(180deg)}
+  .toc ol{margin:4px 6px 10px;padding-left:0;counter-reset:t;list-style:none}
+  .toc li{counter-increment:t;margin:2px 0}
+  .toc a{display:flex;gap:12px;align-items:baseline;text-decoration:none;color:var(--ink);
+    padding:9px 12px;border-radius:10px;font-size:16.5px}
+  .toc a:hover{background:#fff}
+  .toc a::before{content:counter(t);font-variant-numeric:tabular-nums;font-weight:600;
+    color:var(--gold);min-width:22px;font-size:15px}
+
+  /* шаги */
+  .step{scroll-margin-top:20px}
+  .step-head{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+  .badge{flex:0 0 auto;width:48px;height:48px;border-radius:14px;background:var(--gold-soft);
+    color:var(--gold-deep);border:1px solid var(--gold-line);display:flex;align-items:center;
+    justify-content:center;font-weight:700;font-size:21px;font-variant-numeric:tabular-nums}
+  .step h2{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(24px,4.6vw,30px);
+    line-height:1.15;margin:0;letter-spacing:-.01em}
+  .step h2 .sub{display:block;font-family:inherit;font-size:15px;font-weight:400;color:var(--muted);
+    letter-spacing:.02em;margin-top:3px;font-style:italic}
+  .step p{margin:0 0 14px;color:var(--ink)}
+  .step .body{padding-left:0}
+
+  /* «что увидишь» */
+  .seen{display:flex;gap:11px;align-items:flex-start;background:var(--ok-soft);border:1px solid #cfe6d8;
+    border-radius:var(--radius-sm);padding:13px 15px;font-size:16.5px;color:#23533c;margin:16px 0 0}
+  .seen svg{width:20px;height:20px;flex:0 0 auto;color:var(--ok);margin-top:2px}
+  .seen b{color:#1c4631}
+
+  /* клавиши */
+  .keys{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 16px}
+  kbd{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:36px;
+    padding:0 11px;background:#fff;border:1px solid #d8d3c7;border-bottom-width:2px;border-radius:9px;
+    font:600 16px/1 -apple-system,system-ui,sans-serif;color:var(--ink);box-shadow:var(--shadow-sm)}
+  .keys .plus{color:var(--muted);font-weight:600}
+
+  /* код / команда */
+  figure.code{margin:18px 0 0}
+  .code-cap{font-size:14px;color:var(--muted);margin:0 0 8px}
+  .code-box{position:relative;background:#1c2027;border-radius:var(--radius-sm);overflow:hidden;
+    box-shadow:var(--shadow)}
+  .code-box pre{margin:0;padding:18px 56px 18px 18px;overflow-x:auto;
+    font:500 15px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e8e6df}
+  .copy{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;
+    background:#2c323b;color:#cfd4dc;border:1px solid #3a414c;border-radius:9px;padding:7px 11px;
+    font-size:13.5px;cursor:pointer;transition:.15s}
+  .copy:hover{background:#353c47;color:#fff}
+  .copy svg{width:15px;height:15px}
+  .copy.done{background:var(--ok);border-color:var(--ok);color:#fff}
+
+  /* картинки и рамки */
+  figure.shot{margin:18px 0 0}
+  .frame{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;
+    box-shadow:var(--shadow)}
+  .frame img{display:block;width:100%;height:auto}
+  .placeholder{position:relative;border:2px dashed var(--gold-line);border-radius:var(--radius);
+    background:repeating-linear-gradient(135deg,#fbf8ef,#fbf8ef 12px,#f7f2e4 12px,#f7f2e4 24px);
+    min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px 24px;color:var(--gold-deep)}
+  .placeholder .ph-ico{width:40px;height:40px;margin-bottom:12px;color:var(--gold)}
+  .placeholder .ph-tag{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--gold)}
+  .placeholder .ph-txt{font-size:16px;color:var(--soft);margin-top:6px;max-width:42ch}
+  figcaption{font-size:15px;color:var(--muted);margin-top:10px;line-height:1.5}
+  figcaption .n{display:inline-flex;width:21px;height:21px;border-radius:50%;background:var(--gold);
+    color:#fff;font-size:13px;font-weight:700;align-items:center;justify-content:center;margin-right:6px;
+    vertical-align:-3px}
+
+  /* выноски tip/warning/note */
+  .note{display:flex;gap:13px;border-radius:var(--radius-sm);padding:15px 17px;margin:18px 0 0;
+    font-size:16.5px;line-height:1.6}
+  .note svg{width:22px;height:22px;flex:0 0 auto;margin-top:1px}
+  .note b{display:block;margin-bottom:2px}
+  .note.tip{background:var(--gold-soft);border:1px solid var(--gold-line)}
+  .note.tip svg{color:var(--gold-deep)} .note.tip b{color:var(--gold-deep)}
+  .note.warn{background:var(--warn-soft);border:1px solid var(--warn-line)}
+  .note.warn svg{color:var(--warn)} .note.warn b{color:var(--warn)}
+  .note.info{background:var(--info-soft);border:1px solid var(--info-line)}
+  .note.info svg{color:var(--info)} .note.info b{color:var(--info)}
+
+  /* термин */
+  .term{border-bottom:1.5px dotted var(--gold);cursor:help;font-weight:500}
+  .glossary{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .glossary dt{font-weight:600;margin-top:14px}
+  .glossary dt:first-of-type{margin-top:0}
+  .glossary dd{margin:3px 0 0;color:var(--soft);font-size:16.5px}
+
+  /* раздел-заголовок */
+  .sec-h{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(26px,5vw,34px);
+    line-height:1.12;margin:0 0 6px;letter-spacing:-.01em}
+  .sec-lead{color:var(--muted);margin:0 0 18px;font-size:17.5px}
+
+  /* «если не получилось» */
+  .trouble{display:grid;gap:12px}
+  details.q{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm);overflow:hidden}
+  details.q>summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:600;font-size:17px;
+    display:flex;gap:12px;align-items:flex-start}
+  details.q>summary::-webkit-details-marker{display:none}
+  details.q>summary .qm{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:var(--warn-soft);
+    color:var(--warn);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-top:1px}
+  details.q>summary .chev{margin-left:auto;width:20px;height:20px;color:var(--muted);transition:transform .2s;flex:0 0 auto}
+  details.q[open]>summary .chev{transform:rotate(180deg)}
+  details.q .ans{padding:0 18px 18px 54px;color:var(--soft);font-size:16.5px}
+  details.q .ans p{margin:0 0 8px}
+
+  hr.rule{border:0;border-top:1px solid var(--line);margin:30px 0}
+
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);
+    color:#9aa0aa;font-size:14.5px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+  footer a{color:var(--soft);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  footer a:hover{color:var(--gold-deep)}
+  footer svg{width:16px;height:16px}
+
+  @media(min-width:820px){
+    body{font-size:19px}
+    header{padding:54px 0 6px}
+    .card{padding:28px 30px}
+    .step .body{padding-left:64px}
+    .seen,.note,figure.shot,figure.code,.keys{margin-left:0}
+    .step .body .seen,.step .body .note,.step .body figure,.step .body .keys{margin-left:0}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Инструкция для новичка</div>
+    <h1>Как сделать скриншот на Mac</h1>
+    <p class="lead">Скриншот это снимок того, что сейчас на экране. Картинка, которую можно сохранить и переслать. Здесь по шагам, без лишних слов.</p>
+    <div class="meta">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Минут на чтение: 5</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 11l8 4 8-4"/></svg>Уровень: с нуля</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>Нужен: только Mac</span>
+    </div>
+  </header>
+
+  <div class="stack">
+
+    <!-- ЧТО ПОЛУЧИТСЯ -->
+    <section class="card panel-result">
+      <p class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg>Что получится в итоге</p>
+      <p style="margin:0">Ты сделаешь снимок всего экрана или выбранной его части, найдёшь готовый файл на рабочем столе и сможешь отправить его в любой чат. На всё уходит пара секунд и одно сочетание клавиш.</p>
+    </section>
+
+    <!-- ПЕРЕД НАЧАЛОМ -->
+    <section class="card">
+      <p class="panel-title" style="color:var(--ink);border:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Что нужно перед началом</p>
+      <ul class="checklist">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Любой Mac: ноутбук MacBook или компьютер iMac. Подойдёт любой, отдельно ничего ставить не надо.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Клавиатура. Будем нажимать несколько клавиш вместе, это и есть весь секрет.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>То, что хочешь снять, заранее открой на экране: переписку, страницу сайта, ошибку.</li>
+      </ul>
+    </section>
+
+    <!-- ОБЗОР / ОГЛАВЛЕНИЕ -->
+    <details class="toc" open>
+      <summary>С чего начнём и к чему придём<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <ol>
+        <li><a href="#step1">Снять весь экран целиком</a></li>
+        <li><a href="#step2">Снять только нужный кусок</a></li>
+        <li><a href="#step3">Снять одно окно красиво</a></li>
+        <li><a href="#step4">Найти готовый файл и переслать</a></li>
+        <li><a href="#step5">Скопировать снимок без файла</a></li>
+        <li><a href="#step6">Поменять папку, куда падают снимки</a></li>
+      </ol>
+    </details>
+
+    <!-- ШАГ 1 -->
+    <section class="step" id="step1">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Сними весь экран целиком<span class="sub">самый быстрый способ</span></h2>
+      </div>
+      <div class="body">
+        <p>Нажми три клавиши одновременно. Держи первые две и сверху нажми третью.</p>
+        <div class="keys">
+          <kbd>⌘ Cmd</kbd><span class="plus">+</span><kbd>⇧ Shift</kbd><span class="plus">+</span><kbd>3</kbd>
+        </div>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> экран коротко мигнёт, послышится щелчок как у фотоаппарата, а в правом нижнем углу на пару секунд всплывёт маленькая картинка снимка.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Подсказка</b>Не успел нажать ровно вместе? Ничего страшного. Зажми Cmd и Shift, держи их, и спокойно нажми 3. Порядок не важен, важно чтобы в момент нажатия 3 первые две были зажаты.</span></div>
+      </div>
+    </section>
+
+    <!-- ШАГ 2 -->
+    <section class="step" id="step2">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Сними только нужный кусок<span class="sub">когда весь экран не нужен</span></h2>
+      </div>
+      <div class="body">
+        <p>Часто нужен не весь экран, а один кусочек. Нажми другое сочетание:</p>
+        <div class="keys">
+          <kbd>⌘ Cmd</kbd><span class="plus">+</span><kbd>⇧ Shift</kbd><span class="plus">+</span><kbd>4</kbd>
+        </div>
+        <p>Курсор превратится в перекрестие (тонкий прицел с цифрами рядом). Теперь нажми левую кнопку мыши или трекпада в одном углу нужной области, и не отпуская веди в противоположный угол. Появится подсвеченный прямоугольник. Отпусти кнопку, снимок готов.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> снимется ровно тот прямоугольник, что ты выделил, а не весь экран. Файл появится там же, на рабочем столе.</span></div>
+
+        <figure class="shot">
+          <div class="placeholder">
+            <svg class="ph-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg>
+            <span class="ph-tag">сюда твой скриншот</span>
+            <span class="ph-txt">Перекрестие, которым выделяют область. Сделай реальный снимок своего экрана в этот момент и положи его на место этой рамки.</span>
+          </div>
+          <figcaption><span class="n">1</span>Перекрестие тянем из угла в угол. Подсвеченное и есть будущий снимок.</figcaption>
+        </figure>
+
+        <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Передумал?</b>Нажми клавишу <kbd style="height:26px;min-width:24px;font-size:13px">Esc</kbd> (верхний левый угол клавиатуры), и перекрестие исчезнет без снимка.</span></div>
+      </div>
+    </section>
+
+    <!-- ШАГ 3 -->
+    <section class="step" id="step3">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Сними одно окно красиво<span class="sub">с аккуратной тенью по краям</span></h2>
+      </div>
+      <div class="body">
+        <p>Если нужно снять ровно одно окно программы, есть приём чище, чем выделять руками.</p>
+        <ol style="margin:0 0 14px;padding-left:22px">
+          <li style="margin-bottom:8px">Нажми <kbd style="height:28px;min-width:26px;font-size:13px">⌘</kbd> <kbd style="height:28px;min-width:26px;font-size:13px">⇧</kbd> <kbd style="height:28px;min-width:26px;font-size:13px">4</kbd>, как в шаге 2.</li>
+          <li style="margin-bottom:8px">Затем один раз нажми клавишу <kbd style="height:28px;font-size:13px">Пробел</kbd>. Перекрестие превратится в значок фотоаппарата.</li>
+          <li>Наведи фотоаппарат на нужное окно, оно подсветится синим. Кликни по нему.</li>
+        </ol>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> снимется только это окно, ровно по краям и с мягкой тенью вокруг. Выглядит аккуратно, будто из журнала.</span></div>
+      </div>
+    </section>
+
+    <!-- ШАГ 4 -->
+    <section class="step" id="step4">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Найди файл и перешли его<span class="sub">куда падают снимки</span></h2>
+      </div>
+      <div class="body">
+        <p>По умолчанию каждый снимок сохраняется отдельным файлом на <b>рабочий стол</b> (главный экран с папками, который виден, когда все программы свёрнуты). Имя файла такое: «Снимок экрана» и дальше дата со временем.</p>
+        <p>Чтобы переслать: открой чат, нажми скрепку или плюс для вложения, выбери этот файл с рабочего стола. Или просто перетащи файл мышкой прямо в окно чата.</p>
+
+        <figure class="shot">
+          <div class="placeholder">
+            <svg class="ph-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg>
+            <span class="ph-tag">сюда твой скриншот</span>
+            <span class="ph-txt">Файл снимка на рабочем столе. Сними свой рабочий стол с этим файлом и замени рамку.</span>
+          </div>
+          <figcaption><span class="n">2</span>Готовый файл лежит на рабочем столе. Его и пересылаем.</figcaption>
+        </figure>
+
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Хочешь сначала подрисовать стрелку?</b>Сразу после снимка в углу всплывает маленькая картинка. Кликни по ней, откроется простой редактор: там можно нарисовать стрелку, обвести или замазать лишнее, потом нажать «Готово».</span></div>
+      </div>
+    </section>
+
+    <!-- ШАГ 5 -->
+    <section class="step" id="step5">
+      <div class="step-head">
+        <div class="badge">5</div>
+        <h2>Скопируй снимок без файла<span class="sub">чтобы сразу вставить в чат</span></h2>
+      </div>
+      <div class="body">
+        <p>Иногда не нужен файл на рабочем столе, хочется сразу вставить картинку в сообщение. Тогда к тому же сочетанию добавь клавишу <kbd style="height:28px;font-size:13px">Ctrl</kbd>. Снимок попадёт в <span class="term" title="Буфер обмена: невидимая память, куда временно ложится скопированное, пока ты не вставишь его в другом месте.">буфер обмена</span>, а не в файл.</p>
+        <div class="keys">
+          <kbd>⌃ Ctrl</kbd><span class="plus">+</span><kbd>⌘ Cmd</kbd><span class="plus">+</span><kbd>⇧ Shift</kbd><span class="plus">+</span><kbd>4</kbd>
+        </div>
+        <p>Выдели область как обычно. Потом перейди в чат и вставь снимок сочетанием <kbd style="height:28px;min-width:26px;font-size:13px">⌘</kbd> <kbd style="height:28px;min-width:26px;font-size:13px">V</kbd>.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> на рабочем столе нового файла не появится. Зато в чате по <kbd style="height:24px;min-width:22px;font-size:12px">⌘</kbd> <kbd style="height:24px;min-width:22px;font-size:12px">V</kbd> вставится картинка.</span></div>
+      </div>
+    </section>
+
+    <!-- ШАГ 6 -->
+    <section class="step" id="step6">
+      <div class="step-head">
+        <div class="badge">6</div>
+        <h2>Поменяй папку для снимков<span class="sub">по желанию, не обязательно</span></h2>
+      </div>
+      <div class="body">
+        <p>Если рабочий стол быстро зарастает снимками, можно отправлять их в отдельную папку. Простой способ:</p>
+        <ol style="margin:0 0 14px;padding-left:22px">
+          <li style="margin-bottom:8px">Нажми <kbd style="height:28px;min-width:26px;font-size:13px">⌘</kbd> <kbd style="height:28px;min-width:26px;font-size:13px">⇧</kbd> <kbd style="height:28px;min-width:26px;font-size:13px">5</kbd>. Внизу экрана появится панель снимков.</li>
+          <li style="margin-bottom:8px">Нажми «Параметры».</li>
+          <li>В разделе «Сохранять в» выбери папку, например «Документы», или «Другое место» и укажи свою.</li>
+        </ol>
+
+        <p>Любишь команды? То же самое делает одна строка в программе «Терминал». Скопируй и вставь её туда, затем нажми Enter.</p>
+        <figure class="code">
+          <p class="code-cap">Папка для снимков станет «Документы». Чтобы вернуть рабочий стол, замени Documents на Desktop.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>defaults write com.apple.screencapture location ~/Documents; killall SystemUIServer</code></pre>
+          </div>
+        </figure>
+        <div class="note warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>Если не уверен</b>Терминал не обязателен. Способ через панель <kbd style="height:24px;min-width:22px;font-size:12px">⌘</kbd> <kbd style="height:24px;min-width:22px;font-size:12px">⇧</kbd> <kbd style="height:24px;min-width:22px;font-size:12px">5</kbd> делает ровно то же самое и безопаснее для новичка.</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- СЛОВАРИК -->
+    <section>
+      <h2 class="sec-h">Мини-словарик</h2>
+      <p class="sec-lead">Пара слов, которые встретились выше, простыми словами.</p>
+      <dl class="glossary card" style="padding:22px 24px">
+        <dt>Скриншот (снимок экрана)</dt>
+        <dd>Картинка того, что прямо сейчас на экране. Как фотография экрана, только без фотоаппарата.</dd>
+        <dt>Буфер обмена</dt>
+        <dd>Невидимая память. Когда ты что-то копируешь, оно лежит в буфере, пока ты не вставишь его в другом месте.</dd>
+        <dt>Рабочий стол</dt>
+        <dd>Главный экран Mac с фоновой картинкой и значками, который виден, когда все окна закрыты или свёрнуты.</dd>
+        <dt>Терминал</dt>
+        <dd>Программа, где компьютеру дают команды текстом, а не кнопками. Для скриншотов она не нужна, это способ для любопытных.</dd>
+      </dl>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ЕСЛИ НЕ ПОЛУЧИЛОСЬ -->
+    <section>
+      <h2 class="sec-h">Если не получилось</h2>
+      <p class="sec-lead">Частые заминки и что с ними делать. Нажми на вопрос, откроется ответ.</p>
+      <div class="trouble">
+        <details class="q">
+          <summary><span class="qm">?</span>Нажал клавиши, но на рабочем столе ничего нет<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Скорее всего снимок ушёл в буфер обмена, а не в файл. Так бывает, если в сочетании была зажата клавиша Ctrl (см. шаг 5). Сними ещё раз без Ctrl: только Cmd, Shift и цифра.</p>
+            <p>Ещё вариант: кто-то менял папку сохранения. Проверь через <kbd style="height:24px;min-width:22px;font-size:12px">⌘</kbd> <kbd style="height:24px;min-width:22px;font-size:12px">⇧</kbd> <kbd style="height:24px;min-width:22px;font-size:12px">5</kbd>, «Параметры», «Сохранять в».</p>
+          </div>
+        </details>
+        <details class="q">
+          <summary><span class="qm">?</span>Нажимаю, и вообще ничего не происходит<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Возможно, сочетание выключено или занято другой программой. Открой «Системные настройки», раздел «Клавиатура», «Сочетания клавиш», слева выбери «Снимки экрана» и проверь, что галочки стоят.</p>
+            <p>Проверь и сами клавиши: Cmd это клавиша рядом с пробелом со значком ⌘, Shift это широкая клавиша со стрелкой вверх ⇧.</p>
+          </div>
+        </details>
+        <details class="q">
+          <summary><span class="qm">?</span>Перекрестие появилось, а я передумал снимать<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Нажми Esc (верхний левый угол клавиатуры). Перекрестие пропадёт, снимок не сохранится.</p>
+          </div>
+        </details>
+        <details class="q">
+          <summary><span class="qm">?</span>Не получается выбрать именно окно<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Порядок такой: сначала Cmd, Shift, 4. Потом отдельно один раз Пробел. Перекрестие станет фотоаппаратом. Наведи на окно, дождись синей подсветки и кликни. Если фотоаппарата нет, значит Пробел не нажался, повтори.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer>
+      <span>Инструкция обновлена: 22 июня 2026.</span>
+      <a href="../"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Все инструкции</a>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+  // прогресс чтения
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var sc=h.scrollTop||document.body.scrollTop;
+    var mx=(h.scrollHeight-h.clientHeight)||1;bar.style.width=(sc/mx*100)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});upd();
+
+  // кнопки «Копировать»
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var code=btn.parentElement.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(function(){
+        var old=btn.innerHTML;btn.classList.add('done');
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Скопировано';
+        setTimeout(function(){btn.classList.remove('done');btn.innerHTML=old;},1600);
+      });
+    });
+  });
+</script>
+</body>
+</html>

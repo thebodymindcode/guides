@@ -1,0 +1,954 @@
+<!doctype html>
+<!--
+  ШАБЛОН ИНСТРУКЦИИ /guide. Это рабочий пример со всеми блоками сразу.
+  Как пользоваться: скопируй файл в out/<slug>/index.html и замени КОНТЕНТ своим.
+  CSS в <head> не трогай, он отлажен и проходит /design-review. Меняй только текст,
+  шаги, картинки и блоки внутри <body>. Лишние блоки удаляй, нужные повторяй.
+  Жёсткие правила: нигде ни одного длинного тире; каждый шаг начинается с глагола;
+  у каждого шага строка «Как понять, что вышло»; в конце раздел «Если не получилось».
+  Блоки-кубики (бери и повторяй):
+    .chip : метка в шапке (время, уровень)         .seen : строка «что увидишь»
+    .panel-result : «что получится»                .keys + kbd : клавиши
+    .checklist : «что нужно перед началом»         figure.code : копируемая команда
+    .toc : оглавление                              figure.shot .frame img : реальный скрин
+    .step (.badge + h2 + .body) : шаг              figure.shot .placeholder : рамка под скрин
+    .note.tip / .note.warn / .note.info : выноски  .term + title : термин с пояснением
+    .glossary : мини-словарик                      details.q : вопрос «Если не получилось»
+-->
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Телеграм-канал с нуля: полная инструкция для новичка</title>
+<meta name="description" content="Понятно и по шагам: как создать телеграм-канал, оформить его, постить тексты с форматированием, фото, видео, файлы и альбомы, и грамотно вести. Для новичка.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16191f; --soft:#3d434e; --muted:#6b7280; --line:#e9e6df; --line-soft:#f0ede6;
+    --bg:#fbfaf7; --paper:#f5f2ea; --card:#ffffff;
+    --gold:#8f7327; --gold-deep:#6f5915; --gold-soft:#f4eeda; --gold-line:#e7dcb8;
+    --ok:#2f7d57; --ok-soft:#e9f3ec;
+    --warn:#a85a22; --warn-soft:#fbf0e5; --warn-line:#f0dcc4;
+    --info:#3a6691; --info-soft:#eaf1f8; --info-line:#d8e5f1;
+    --radius:18px; --radius-sm:12px;
+    --shadow:0 1px 2px rgba(20,23,31,.04),0 10px 30px rgba(20,23,31,.06);
+    --shadow-sm:0 1px 2px rgba(20,23,31,.05),0 4px 14px rgba(20,23,31,.05);
+    --maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:400 18px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;
+    padding:0 18px calc(72px + env(safe-area-inset-bottom));}
+  a{color:var(--gold-deep);text-underline-offset:3px;text-decoration-thickness:1.5px}
+
+  /* прогресс чтения */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--gold);z-index:50;transition:width .1s linear}
+
+  /* шапка */
+  header{padding:38px 0 6px}
+  .kicker{font-size:13.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(32px,7.4vw,48px);
+    line-height:1.06;margin:.34em 0 .3em;letter-spacing:-.012em}
+  .lead{color:var(--soft);font-size:20px;line-height:1.55;margin:0;max-width:58ch}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:7px 14px;font-size:14.5px;color:var(--soft);box-shadow:var(--shadow-sm)}
+  .chip svg{width:16px;height:16px;color:var(--gold)}
+
+  /* блоки-карточки */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:24px 24px}
+  .panel-result{background:linear-gradient(180deg,#fffdf6,#fff);border-color:var(--gold-line)}
+  .panel-title{display:flex;align-items:center;gap:11px;font-weight:600;font-size:15px;
+    letter-spacing:.04em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 14px}
+  .panel-title svg{width:22px;height:22px;flex:0 0 auto}
+  .stack{display:grid;gap:34px;margin-top:30px}
+  .stack>*{min-width:0}
+  .step .body,.body>*{min-width:0;max-width:100%}
+  .checklist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .checklist li{display:flex;gap:12px;align-items:flex-start;font-size:17.5px;color:var(--soft)}
+  .checklist li svg{width:22px;height:22px;flex:0 0 auto;color:var(--ok);margin-top:1px}
+
+  /* оглавление */
+  .toc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:8px 8px}
+  .toc>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:600;
+    display:flex;align-items:center;justify-content:space-between;border-radius:12px}
+  .toc>summary::-webkit-details-marker{display:none}
+  .toc>summary .chev{width:20px;height:20px;color:var(--muted);transition:transform .2s}
+  .toc[open]>summary .chev{transform:rotate(180deg)}
+  .toc ol{margin:4px 6px 10px;padding-left:0;counter-reset:t;list-style:none}
+  .toc li{counter-increment:t;margin:2px 0}
+  .toc a{display:flex;gap:12px;align-items:baseline;text-decoration:none;color:var(--ink);
+    padding:9px 12px;border-radius:10px;font-size:16.5px}
+  .toc a:hover{background:#fff}
+  .toc a::before{content:counter(t);font-variant-numeric:tabular-nums;font-weight:600;
+    color:var(--gold);min-width:22px;font-size:15px}
+
+  /* шаги */
+  .step{scroll-margin-top:20px}
+  .step-head{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+  .badge{flex:0 0 auto;width:48px;height:48px;border-radius:14px;background:var(--gold-soft);
+    color:var(--gold-deep);border:1px solid var(--gold-line);display:flex;align-items:center;
+    justify-content:center;font-weight:700;font-size:21px;font-variant-numeric:tabular-nums}
+  .step h2{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(24px,4.6vw,30px);
+    line-height:1.15;margin:0;letter-spacing:-.01em}
+  .step h2 .sub{display:block;font-family:inherit;font-size:15px;font-weight:400;color:var(--muted);
+    letter-spacing:.02em;margin-top:3px;font-style:italic}
+  .step p{margin:0 0 14px;color:var(--ink)}
+  .step .body{padding-left:0}
+
+  /* «что увидишь» */
+  .seen{display:flex;gap:11px;align-items:flex-start;background:var(--ok-soft);border:1px solid #cfe6d8;
+    border-radius:var(--radius-sm);padding:13px 15px;font-size:16.5px;color:#23533c;margin:16px 0 0}
+  .seen svg{width:20px;height:20px;flex:0 0 auto;color:var(--ok);margin-top:2px}
+  .seen b{color:#1c4631}
+
+  /* клавиши */
+  .keys{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 16px}
+  kbd{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:36px;
+    padding:0 11px;background:#fff;border:1px solid #d8d3c7;border-bottom-width:2px;border-radius:9px;
+    font:600 16px/1 -apple-system,system-ui,sans-serif;color:var(--ink);box-shadow:var(--shadow-sm)}
+  .keys .plus{color:var(--muted);font-weight:600}
+
+  /* код / команда */
+  figure.code{margin:18px 0 0}
+  .code-cap{font-size:14px;color:var(--muted);margin:0 0 8px}
+  .code-box{position:relative;background:#1c2027;border-radius:var(--radius-sm);overflow:hidden;
+    box-shadow:var(--shadow)}
+  .code-box pre{margin:0;padding:18px 56px 18px 18px;overflow-x:auto;
+    font:500 15px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e8e6df}
+  .copy{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;
+    background:#2c323b;color:#cfd4dc;border:1px solid #3a414c;border-radius:9px;padding:7px 11px;
+    font-size:13.5px;cursor:pointer;transition:.15s}
+  .copy:hover{background:#353c47;color:#fff}
+  .copy svg{width:15px;height:15px}
+  .copy.done{background:var(--ok);border-color:var(--ok);color:#fff}
+
+  /* картинки и рамки */
+  figure.shot{margin:18px 0 0}
+  .frame{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;
+    box-shadow:var(--shadow)}
+  .frame img{display:block;width:100%;height:auto}
+  .placeholder{position:relative;border:2px dashed var(--gold-line);border-radius:var(--radius);
+    background:repeating-linear-gradient(135deg,#fbf8ef,#fbf8ef 12px,#f7f2e4 12px,#f7f2e4 24px);
+    min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px 24px;color:var(--gold-deep)}
+  .placeholder .ph-ico{width:40px;height:40px;margin-bottom:12px;color:var(--gold)}
+  .placeholder .ph-tag{font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--gold)}
+  .placeholder .ph-txt{font-size:16px;color:var(--soft);margin-top:6px;max-width:42ch}
+  figcaption{font-size:15px;color:var(--muted);margin-top:10px;line-height:1.5}
+  figcaption .n{display:inline-flex;width:21px;height:21px;border-radius:50%;background:var(--gold);
+    color:#fff;font-size:13px;font-weight:700;align-items:center;justify-content:center;margin-right:6px;
+    vertical-align:-3px}
+
+  /* выноски tip/warning/note */
+  .note{display:flex;gap:13px;border-radius:var(--radius-sm);padding:15px 17px;margin:18px 0 0;
+    font-size:16.5px;line-height:1.6}
+  .note svg{width:22px;height:22px;flex:0 0 auto;margin-top:1px}
+  .note b{display:block;margin-bottom:2px}
+  .note.tip{background:var(--gold-soft);border:1px solid var(--gold-line)}
+  .note.tip svg{color:var(--gold-deep)} .note.tip b{color:var(--gold-deep)}
+  .note.warn{background:var(--warn-soft);border:1px solid var(--warn-line)}
+  .note.warn svg{color:var(--warn)} .note.warn b{color:var(--warn)}
+  .note.info{background:var(--info-soft);border:1px solid var(--info-line)}
+  .note.info svg{color:var(--info)} .note.info b{color:var(--info)}
+
+  /* термин */
+  .term{border-bottom:1.5px dotted var(--gold);cursor:help;font-weight:500}
+  .glossary{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .glossary dt{font-weight:600;margin-top:14px}
+  .glossary dt:first-of-type{margin-top:0}
+  .glossary dd{margin:3px 0 0;color:var(--soft);font-size:16.5px}
+
+  /* раздел-заголовок */
+  .sec-h{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(26px,5vw,34px);
+    line-height:1.12;margin:0 0 6px;letter-spacing:-.01em}
+  .sec-lead{color:var(--muted);margin:0 0 18px;font-size:17.5px}
+
+  /* «если не получилось» */
+  .trouble{display:grid;gap:12px}
+  details.q{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm);overflow:hidden}
+  details.q>summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:600;font-size:17px;
+    display:flex;gap:12px;align-items:flex-start}
+  details.q>summary::-webkit-details-marker{display:none}
+  details.q>summary .qm{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:var(--warn-soft);
+    color:var(--warn);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-top:1px}
+  details.q>summary .chev{margin-left:auto;width:20px;height:20px;color:var(--muted);transition:transform .2s;flex:0 0 auto}
+  details.q[open]>summary .chev{transform:rotate(180deg)}
+  details.q .ans{padding:0 18px 18px 54px;color:var(--soft);font-size:16.5px}
+  details.q .ans p{margin:0 0 8px}
+
+  hr.rule{border:0;border-top:1px solid var(--line);margin:30px 0}
+
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);
+    color:#9aa0aa;font-size:14.5px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+  footer a{color:var(--soft);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  footer a:hover{color:var(--gold-deep)}
+  footer svg{width:16px;height:16px}
+
+  @media(min-width:820px){
+    body{font-size:19px}
+    header{padding:54px 0 6px}
+    .card{padding:28px 30px}
+    .step .body{padding-left:64px}
+    .seen,.note,figure.shot,figure.code,.keys{margin-left:0}
+    .step .body .seen,.step .body .note,.step .body figure,.step .body .keys{margin-left:0}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="wrap">
+
+  <header>
+    <div class="kicker">Инструкция для новичка</div>
+    <h1>Телеграм-канал с нуля</h1>
+    <p class="lead">Разберёшься, даже если открыл Телеграм впервые. Заведём канал, оформим его, научимся постить тексты, фото и файлы, и вести так, чтобы людям было удобно читать.</p>
+    <div class="meta">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Минут на чтение: 20</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 11l8 4 8-4"/></svg>Уровень: с нуля</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="12" height="18" rx="3"/><path d="M11 18h2"/></svg>Нужен: Телеграм</span>
+    </div>
+  </header>
+
+  <div class="stack">
+
+    <!-- ЧТО ПОЛУЧИТСЯ -->
+    <section class="card panel-result">
+      <p class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg>Что получится в итоге</p>
+      <p style="margin:0">У тебя будет свой канал с именем, аватаркой и описанием. Ты сможешь публиковать посты с красивым текстом, выкладывать фото, видео и файлы, собирать их в альбомы, ставить отложенный выход и закреплять важное. И будешь видеть, сколько людей прочитало каждый пост. А ещё поймёшь, как вести канал, чтобы его дочитывали до конца.</p>
+    </section>
+
+    <!-- ПЕРЕД НАЧАЛОМ -->
+    <section class="card">
+      <p class="panel-title" style="color:var(--ink);border:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Что нужно перед началом</p>
+      <ul class="checklist">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Телефон или компьютер с установленным Телеграмом. Если его нет, поставь приложение из App Store, Google Play или с сайта telegram.org. Это бесплатно.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Аккаунт в Телеграме. Вход по номеру телефона. Если ты уже переписываешься в Телеграме, аккаунт у тебя есть.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Идея на пару строк: про что канал и как его назвать. Пригодится на шаге создания.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Картинка для аватара, лучше квадратная. По желанию, можно добавить и позже.</li>
+      </ul>
+    </section>
+
+    <!-- ОГЛАВЛЕНИЕ -->
+    <details class="toc" open>
+      <summary>С чего начнём и к чему придём<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <ol>
+        <li><a href="#sec-chto">Канал, группа и чат: в чём разница</a></li>
+        <li><a href="#sec-create">Создать канал</a></li>
+        <li><a href="#sec-design">Оформить канал</a></li>
+        <li><a href="#sec-post">Писать и постить</a></li>
+        <li><a href="#sec-format">Форматирование текста</a></li>
+        <li><a href="#sec-media">Фото, видео и файлы</a></li>
+        <li><a href="#sec-howto">Как вести канал грамотно</a></li>
+        <li><a href="#sec-manage">Управление: админы, статистика, бусты</a></li>
+        <li><a href="#sec-faq">Если не получилось</a></li>
+      </ol>
+    </details>
+
+    <!-- ===== 1. ЧТО ТАКОЕ КАНАЛ ===== -->
+    <section id="sec-chto">
+      <h2 class="sec-h">Канал, группа и чат: в чём разница</h2>
+      <p class="sec-lead">Три похожие на вид вещи в Телеграме, но работают по-разному. Разберём за минуту, чтобы ты точно завёл именно то, что нужно.</p>
+
+      <div style="display:grid;gap:14px">
+        <div class="card">
+          <p style="margin:0 0 6px;font-weight:600;font-size:19px">Канал</p>
+          <p style="margin:0;color:var(--soft);font-size:17px">Это рупор. Пишешь только ты (и твои админы), а подписчики читают. Подписчиков может быть сколько угодно, хоть миллион. Они не пишут в сам канал, поэтому шума нет, только твои посты по порядку. Каждый пост видит счётчик просмотров. Идеально, когда ты что-то рассказываешь людям: новости, статьи, анонсы, дневник.</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 6px;font-weight:600;font-size:19px">Группа</p>
+          <p style="margin:0;color:var(--soft);font-size:17px">Это общий чат, где пишут все участники. Подходит для обсуждений и сообществ. К каналу можно прицепить отдельную группу для комментариев, тогда под каждым постом появляется кнопка «Комментировать», а сами комментарии живут в этой группе.</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 6px;font-weight:600;font-size:19px">Личный чат</p>
+          <p style="margin:0;color:var(--soft);font-size:17px">Это переписка один на один или маленькая беседа. Тут нет счётчика просмотров и нет роли «только автор пишет». Для рассылки на аудиторию чат не годится, для этого и есть канал.</p>
+        </div>
+      </div>
+
+      <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Короткое правило</b>Хочешь вещать на многих и держать порядок в ленте, заводи канал. Хочешь живое общение всех со всеми, заводи группу. Дальше делаем именно канал.</span></div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ===== 2. СОЗДАТЬ КАНАЛ ===== -->
+    <section id="sec-create">
+      <h2 class="sec-h">Создать канал</h2>
+      <p class="sec-lead">Четыре коротких шага. К концу у тебя будет рабочий канал, готовый к первому посту.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Открой создание канала<span class="sub">кнопка карандаша</span></h2>
+      </div>
+      <div class="body">
+        <p>На телефоне найди круглую кнопку с карандашом. На Android она внизу справа, на iPhone вверху справа. Нажми её, затем выбери «Создать канал».</p>
+        <p>На компьютере нажми три полоски слева вверху (значок меню), затем «Создать канал».</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> откроется экран с полем для названия и круглым кружком для аватарки.</span></div>
+
+        <figure class="shot">
+          <div class="placeholder">
+            <svg class="ph-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg>
+            <span class="ph-tag">сюда твой скриншот</span>
+            <span class="ph-txt">Меню с пунктом «Создать канал». Сними этот экран на своём телефоне и поставь сюда. Стрелкой покажи на кнопку карандаша.</span>
+          </div>
+          <figcaption><span class="n">1</span>Кнопка карандаша и пункт «Создать канал».</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Назови канал и опиши его<span class="sub">имя и описание</span></h2>
+      </div>
+      <div class="body">
+        <p>Введи название канала. Это крупная надпись, которую видят все. Его можно поменять потом, так что не переживай за идеальность.</p>
+        <p>Ниже добавь описание: пара строк о том, про что канал и зачем на него подписываться. Чтобы поставить аватарку, нажми на круглый кружок и выбери картинку из галереи. Когда готово, нажми «Далее» (стрелку вперёд вверху справа).</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> появится экран «Тип канала» с выбором между публичным и частным.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Выбери публичный или частный<span class="sub">это про то, как тебя найдут</span></h2>
+      </div>
+      <div class="body">
+        <p>Тут два варианта, и разница простая.</p>
+        <ul style="margin:0 0 14px;padding-left:20px;color:var(--soft)">
+          <li style="margin-bottom:8px"><b style="color:var(--ink)">Публичный.</b> У канала есть короткое имя-ссылка, например t.me/moi_kanal. Его можно найти через поиск в Телеграме и открыть по ссылке. Подходит, когда хочешь, чтобы тебя находили свободно.</li>
+          <li><b style="color:var(--ink)">Частный.</b> Имени в поиске нет. Войти можно только по ссылке-приглашению, которую даёшь ты. Подходит для закрытого круга: клиенты, команда, платный доступ.</li>
+        </ul>
+        <p>Если выбрал публичный, придумай <span class="term" title="Юзернейм: короткий адрес канала латиницей после знака @, он же часть ссылки t.me/.">юзернейм</span>. Это латинские буквы, цифры и нижнее подчёркивание, минимум 5 символов, и он должен быть свободен. Если выбрал частный, Телеграм сам создаст ссылку-приглашение, её потом можно скопировать и разослать.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> под полем юзернейма загорается зелёная галочка, если имя свободно, и красная подпись, если уже занято. Свободное имя сохрани кнопкой «Далее».</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Подсказка</b>Тип канала не приговор. Частный можно потом сделать публичным и наоборот, а юзернейм поменять. Начни как удобнее сейчас.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Пропусти приглашение или позови первых<span class="sub">и канал готов</span></h2>
+      </div>
+      <div class="body">
+        <p>Телеграм предложит добавить контакты в канал. Вручную можно добавить только первых 200 человек, остальные подпишутся сами по ссылке. Если не хочешь никого дёргать сейчас, нажми «Пропустить».</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> канал создан, и ты внутри. Внизу появилось поле для ввода первого поста.</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ===== 3. ОФОРМИТЬ КАНАЛ ===== -->
+    <section id="sec-design">
+      <h2 class="sec-h">Оформить канал</h2>
+      <p class="sec-lead">Аватар, описание и ссылку ты уже задал при создании. Тут поправим их при желании и включим две важные вещи: реакции и комментарии. Всё это живёт в настройках канала.</p>
+      <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Где настройки канала</b>Открой канал, нажми на его название вверху, затем «Изменить» (карандаш вверху справа). Дальше во всех шагах этого раздела я называю этот экран «настройки канала».</span></div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Поправь аватар и описание<span class="sub">лицо канала</span></h2>
+      </div>
+      <div class="body">
+        <p>В настройках канала нажми на круглую картинку, чтобы сменить аватар. Хорошая аватарка простая и читается даже крошечной: лого, лицо или один яркий символ. Ниже в поле описания напиши, про что канал и для кого. Это первое, что видит человек перед подпиской.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> новая картинка и текст описания показываются на странице канала, когда выходишь из настроек.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Включи реакции<span class="sub">эмодзи под постами</span></h2>
+      </div>
+      <div class="body">
+        <p>Реакции это эмодзи, которыми читатели одним нажатием отвечают на пост, например ❤️ 🔥 😮. Это самый лёгкий способ для людей откликнуться, и он же подсказывает тебе, что зашло.</p>
+        <p>В настройках канала открой «Реакции» и включи их. Можно оставить все эмодзи или выбрать несколько своих.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> под постами появляется ряд эмодзи со счётчиком, и читатели могут по ним нажимать.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Включи комментарии<span class="sub">через группу обсуждений</span></h2>
+      </div>
+      <div class="body">
+        <p>Чтобы под постами можно было писать комментарии, к каналу прицепляют отдельную <span class="term" title="Группа обсуждений: связанный с каналом чат, куда попадают комментарии к постам.">группу обсуждений</span>. Звучит сложно, на деле пара нажатий.</p>
+        <ol style="margin:0 0 14px;padding-left:22px">
+          <li style="margin-bottom:8px">В настройках канала открой «Обсуждение».</li>
+          <li style="margin-bottom:8px">Нажми «Создать группу», Телеграм сам сделает чат для комментариев и привяжет его.</li>
+          <li>Если группа для общения уже есть, выбери её из списка вместо создания новой.</li>
+        </ol>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> под каждым новым постом появляется кнопка «Прокомментировать». Нажав её, читатель пишет в привязанную группу.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Подсказка</b>Комментарии можно отключить так же, отвязав группу. Если боишься спама на старте, включи их позже, когда наберётся живая аудитория.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Скопируй ссылку на канал<span class="sub">чтобы делиться</span></h2>
+      </div>
+      <div class="body">
+        <p>Ссылка нужна, чтобы звать людей. У публичного канала это t.me и твой юзернейм. Открой страницу канала, ссылка показана под названием. Нажми на неё и выбери «Копировать», теперь её можно вставить куда угодно: в сторис, на сайт, в переписку.</p>
+        <p>У частного канала ссылка-приглашение лежит в настройках, в разделе «Пригласительные ссылки». Там же можно создать новую или отозвать старую.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> ссылка скопирована, при вставке выглядит как t.me/твоё_имя. Открой её в браузере для проверки, она ведёт на твой канал.</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ===== 4. ПИСАТЬ И ПОСТИТЬ ===== -->
+    <section id="sec-post">
+      <h2 class="sec-h">Писать и постить</h2>
+      <p class="sec-lead">Самое частое действие: опубликовать пост. А ещё научимся его править, удалять, ставить на таймер, публиковать без звука и закреплять.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Опубликуй первый пост<span class="sub">пишешь и отправляешь</span></h2>
+      </div>
+      <div class="body">
+        <p>Внизу канала есть поле «Напишите сообщение». Нажми на него и набери текст. Чтобы отправить, нажми кнопку с бумажным самолётиком справа от поля.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> пост появился в ленте канала. Под ним время выхода и значок глаза со счётчиком просмотров. Счётчик растёт по мере того, как люди читают.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Отредактируй пост<span class="sub">если заметил опечатку</span></h2>
+      </div>
+      <div class="body">
+        <p>Посты в канале можно править в любой момент, срок не ограничен. Нажми на пост и подержи палец (на компьютере щёлкни правой кнопкой), в меню выбери «Изменить». Поправь текст и снова отправь.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> текст поста изменился у всех. Рядом со временем появляется пометка «ред.», она просто значит, что пост редактировали.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Удали пост<span class="sub">осторожно, без возврата</span></h2>
+      </div>
+      <div class="body">
+        <p>Нажми на пост и подержи (на компьютере правая кнопка), выбери «Удалить». Подтверди. Пост исчезнет у всех подписчиков сразу.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> пост пропал из ленты. Вернуть его нельзя, придётся публиковать заново.</span></div>
+        <div class="note warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>Прежде чем удалять</b>Удаление навсегда. Если хочешь просто поправить, лучше «Изменить» из шага 2. Это сохранит просмотры и место поста в ленте.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Запланируй пост на потом<span class="sub">выйдет сам в нужное время</span></h2>
+      </div>
+      <div class="body">
+        <p>Можно написать пост сейчас, а выйти он пусть позже. Набери текст как обычно, но вместо обычной отправки нажми на кнопку самолётика и подержи её. Появится меню, выбери «Отправить позже» (на части устройств «Запланировать»). Укажи дату и время.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> пост уходит в раздел «Отложенные» (значок часов рядом с полем ввода). В выбранное время он опубликуется сам, даже если телефон выключен. Таких заготовок можно держать до 100.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">5</div>
+        <h2>Опубликуй без звука<span class="sub">чтобы не будить подписчиков</span></h2>
+      </div>
+      <div class="body">
+        <p>Иногда пост не срочный, и незачем слать всем звуковое уведомление, особенно ночью или если постов в день много. Набери пост, подержи кнопку самолётика и выбери «Отправить без звука».</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> пост выходит как обычно, но у подписчиков без звукового сигнала. Сам пост виден всем так же.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">6</div>
+        <h2>Закрепи важный пост<span class="sub">он повиснет вверху</span></h2>
+      </div>
+      <div class="body">
+        <p>Закреплённый пост держится плашкой в самом верху канала, его видит каждый, кто заходит. Удобно для приветствия или правил. Нажми на нужный пост и подержи (на компьютере правая кнопка), выбери «Закрепить».</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> вверху канала появляется узкая плашка с текстом поста. Чтобы снять, нажми на неё и выбери «Открепить».</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ===== 5. ФОРМАТИРОВАНИЕ ===== -->
+    <section id="sec-format">
+      <h2 class="sec-h">Форматирование текста</h2>
+      <p class="sec-lead">Жирный, курсив, спойлер, ссылка внутри слова и другое. Это делает пост живым и читаемым. Есть три способа поставить любой стиль, выбирай удобный.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Выдели текст и выбери стиль<span class="sub">главный способ, работает везде</span></h2>
+      </div>
+      <div class="body">
+        <p>Это самый простой путь, без всяких значков и команд.</p>
+        <ol style="margin:0 0 14px;padding-left:22px">
+          <li style="margin-bottom:8px">Набери текст в поле поста.</li>
+          <li style="margin-bottom:8px">Выдели нужный кусок. На телефоне нажми на слово и подержи, потом потяни за маркеры. На компьютере проведи мышкой по тексту.</li>
+          <li style="margin-bottom:8px">Над выделением появится меню. На Android нажми три точки, на iPhone листай до пункта со стилями (значок «Б/U»), на компьютере щёлкни правой кнопкой и выбери «Форматирование».</li>
+          <li>Выбери стиль из списка: «Жирный», «Курсив», «Подчёркнутый», «Зачёркнутый», «Моноширинный», «Спойлер», «Ссылка», «Цитата».</li>
+        </ol>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> выделенный кусок сразу меняет вид: жирнеет, наклоняется или прячется под серую плашку спойлера. Остальной текст не трогается.</span></div>
+
+        <figure class="shot">
+          <div class="placeholder">
+            <svg class="ph-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg>
+            <span class="ph-tag">сюда твой скриншот</span>
+            <span class="ph-txt">Выделенный текст и всплывшее меню со стилями (Жирный, Курсив и так далее). Сними на своём телефоне и поставь сюда.</span>
+          </div>
+          <figcaption><span class="n">1</span>Меню форматирования над выделенным текстом.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Что делает каждый стиль<span class="sub">короткий справочник</span></h2>
+      </div>
+      <div class="body">
+        <p>Все стили, которые есть в канале, простыми словами:</p>
+        <dl class="glossary card" style="padding:22px 24px">
+          <dt>Жирный</dt>
+          <dd><b>Толстые буквы</b> для главного: заголовок поста, ключевая мысль, цифра.</dd>
+          <dt>Курсив</dt>
+          <dd><i>Наклонные буквы</i> для лёгкого акцента, цитаты или мысли вскользь.</dd>
+          <dt>Подчёркнутый</dt>
+          <dd><u>Черта под словом</u>. Использовать редко, чтобы не путать со ссылкой.</dd>
+          <dt>Зачёркнутый</dt>
+          <dd><s>Перечёркнутый текст</s>. Хорош, чтобы показать «было так, стало иначе»: старая цена, отменённое.</dd>
+          <dt>Моноширинный</dt>
+          <dd><code style="background:#eee;padding:1px 5px;border-radius:5px">Ровные буквы как в коде</code>. Удобно для промокода, адреса или команды: по нажатию такой текст копируется целиком.</dd>
+          <dt>Спойлер</dt>
+          <dd>Текст под серой плашкой, открывается по нажатию. Прячет ответ, концовку или сюрприз.</dd>
+          <dt>Ссылка внутри слова</dt>
+          <dd>Любое слово становится кликабельным и ведёт на сайт. Аккуратнее голой длинной ссылки. Как сделать, в шаге 3.</dd>
+          <dt>Цитата</dt>
+          <dd>Кусок текста с полоской сбоку, будто выписка. Выделяет чужие слова или важный фрагмент.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Спрячь ссылку внутри слова<span class="sub">красивее, чем длинный адрес</span></h2>
+      </div>
+      <div class="body">
+        <p>Вместо некрасивого адреса на пол-экрана можно сделать кликабельным обычное слово, например «<span style="color:var(--gold-deep);text-decoration:underline">читать статью</span>».</p>
+        <ol style="margin:0 0 14px;padding-left:22px">
+          <li style="margin-bottom:8px">Выдели слово, которое станет ссылкой.</li>
+          <li style="margin-bottom:8px">В меню форматирования выбери «Ссылка» (на компьютере быстрее сочетанием клавиш ниже).</li>
+          <li>Вставь адрес сайта в появившееся поле и подтверди.</li>
+        </ol>
+        <div class="keys">
+          <kbd>Ctrl</kbd><span class="plus">или</span><kbd>⌘ Cmd</kbd><span class="plus">+</span><kbd>K</kbd>
+        </div>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> слово стало цветным и подчёркнутым. По нажатию открывается твой сайт, а сам адрес в посте не виден.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Ставь стили с клавиатуры<span class="sub">для компьютера, быстро</span></h2>
+      </div>
+      <div class="body">
+        <p>Если печатаешь на компьютере, удобнее выделить текст и нажать сочетание клавиш. На Windows держи <kbd style="height:28px;min-width:26px;font-size:13px">Ctrl</kbd>, на Mac вместо неё <kbd style="height:28px;min-width:26px;font-size:13px">⌘ Cmd</kbd>.</p>
+        <dl class="glossary card" style="padding:20px 22px">
+          <dt>Жирный</dt><dd>Ctrl или Cmd + B</dd>
+          <dt>Курсив</dt><dd>Ctrl или Cmd + I</dd>
+          <dt>Подчёркнутый</dt><dd>Ctrl или Cmd + U</dd>
+          <dt>Зачёркнутый</dt><dd>Ctrl или Cmd + Shift + X</dd>
+          <dt>Моноширинный</dt><dd>Ctrl или Cmd + Shift + M</dd>
+          <dt>Спойлер</dt><dd>Ctrl или Cmd + Shift + P</dd>
+          <dt>Цитата</dt><dd>Ctrl или Cmd + Shift + точка</dd>
+          <dt>Ссылка</dt><dd>Ctrl или Cmd + K</dd>
+          <dt>Убрать форматирование</dt><dd>Ctrl или Cmd + Shift + N</dd>
+        </dl>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> выделенный текст меняет вид сразу после нажатия, без всякого меню.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">5</div>
+        <h2>Печатай стили значками<span class="sub">разметка прямо в тексте</span></h2>
+      </div>
+      <div class="body">
+        <p>Третий способ: обрамить текст значками прямо при наборе. Телеграм сам превратит их в стиль. Удобно, когда не хочешь отрываться от печати. Обрамляй слово с двух сторон:</p>
+        <figure class="code">
+          <p class="code-cap">Скопируй и попробуй в поле поста. Значки исчезнут, а текст между ними оформится.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>**жирный**
+__курсив__
+~~зачёркнутый~~
+`моноширинный`
+||спойлер||
+[слово-ссылка](https://адрес.ру)</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> как только закроешь второй значок, текст между ними оформится, а сами значки пропадут.</span></div>
+        <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Чего значками не сделать</b>У подчёркнутого и цитаты своих значков нет. Их ставь через меню (шаг 1) или клавишами (шаг 4).</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ===== 6. МЕДИА ===== -->
+    <section id="sec-media">
+      <h2 class="sec-h">Фото, видео и файлы</h2>
+      <p class="sec-lead">Как выложить одну картинку, как собрать несколько в листающийся альбом, как отправить документ и в чём разница между фото и файлом.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Выложи одно фото или видео<span class="sub">через скрепку</span></h2>
+      </div>
+      <div class="body">
+        <p>Рядом с полем ввода есть значок скрепки (на компьютере) или плюса (на телефоне). Нажми его, выбери «Галерея» или «Фото», отметь нужное фото или видео. Перед отправкой можно добавить подпись в поле снизу. Жми отправку.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> в ленте появился пост с картинкой или видео. Под ним твоя подпись, если ты её добавил.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Собери альбом из нескольких фото<span class="sub">листается свайпом</span></h2>
+      </div>
+      <div class="body">
+        <p>Если выбрать несколько фото или видео сразу, Телеграм склеит их в один пост-альбом, который листается пальцем. Это аккуратнее, чем десять отдельных постов.</p>
+        <ol style="margin:0 0 14px;padding-left:22px">
+          <li style="margin-bottom:8px">Нажми скрепку или плюс, открой галерею.</li>
+          <li style="margin-bottom:8px">Отметь несколько фото или видео, до 10 штук в одном альбоме. Фото и видео можно мешать.</li>
+          <li style="margin-bottom:8px">Проверь, что включена группировка (значок или галочка «Сгруппировать»). Если её выключить, каждый файл уйдёт отдельным постом.</li>
+          <li>Добавь подпись и отправь.</li>
+        </ol>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> вышел один пост, внутри которого несколько картинок сеткой. Их можно листать свайпом влево и вправо.</span></div>
+
+        <figure class="shot">
+          <div class="placeholder">
+            <svg class="ph-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/></svg>
+            <span class="ph-tag">сюда твой скриншот</span>
+            <span class="ph-txt">Готовый пост-альбом из нескольких фото сеткой. Сними свой пример и поставь сюда.</span>
+          </div>
+          <figcaption><span class="n">1</span>Альбом: несколько фото в одном посте.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Отправь файл-документ<span class="sub">pdf, таблица, что угодно</span></h2>
+      </div>
+      <div class="body">
+        <p>Файл это любой документ: pdf, таблица, презентация, аудио, архив. Нажми скрепку или плюс, выбери «Файл» (на телефоне может называться «Документ»), найди файл и отправь. Несколько файлов тоже можно сгруппировать в один пост, как альбом: отметь их вместе.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> в посте появилась плашка с именем файла, его размером и кнопкой загрузки. Подписчик нажимает и скачивает.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Реши: фото или файл<span class="sub">про качество картинки</span></h2>
+      </div>
+      <div class="body">
+        <p>Одну и ту же картинку можно отправить двумя способами, и это разные вещи.</p>
+        <ul style="margin:0 0 14px;padding-left:20px;color:var(--soft)">
+          <li style="margin-bottom:8px"><b style="color:var(--ink)">Как фото.</b> Телеграм сжимает картинку, чтобы грузилась быстрее. Качество чуть падает, но для обычных постов незаметно. Это вариант по умолчанию.</li>
+          <li><b style="color:var(--ink)">Как файл.</b> Картинка уходит без сжатия, в полном качестве, но показывается плашкой-документом, а не сразу видна в ленте. Бери, когда важна каждая деталь: макет, скан, фото на печать.</li>
+        </ul>
+        <p>Чтобы отправить картинку файлом, при добавлении выбери «Файл» вместо «Галереи», либо в меню выбора нажми три точки и «Отправить без сжатия».</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> отправленная файлом картинка в ленте показана плашкой с именем файла, а не большим превью. Это и есть полное качество.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">5</div>
+        <h2>Добавь подпись к медиа<span class="sub">текст под фото или файлом</span></h2>
+      </div>
+      <div class="body">
+        <p>Перед отправкой любого фото, видео, альбома или файла есть поле «Подпись». Туда пишут текст, который выйдет вместе с медиа. Подпись тоже можно форматировать всеми стилями из раздела выше: выдели слово и сделай жирным или ссылкой.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> текст показывается прямо под картинкой в том же посте, а не отдельным сообщением.</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ===== 7. КАК ВЕСТИ ГРАМОТНО ===== -->
+    <section id="sec-howto">
+      <h2 class="sec-h">Как вести канал грамотно</h2>
+      <p class="sec-lead">Техника это полдела. Дальше про то, как писать так, чтобы посты дочитывали, а на канал подписывались и оставались.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Собери пост из трёх частей<span class="sub">зацепка, тело, призыв</span></h2>
+      </div>
+      <div class="body">
+        <p>Рабочая структура поста простая:</p>
+        <ul style="margin:0 0 14px;padding-left:20px;color:var(--soft)">
+          <li style="margin-bottom:8px"><b style="color:var(--ink)">Зацепка.</b> Первая строка. Она решает, будут читать дальше или пролистнут. Дай интригу, вопрос или сильный факт. В уведомлении и в ленте видно именно начало.</li>
+          <li style="margin-bottom:8px"><b style="color:var(--ink)">Тело.</b> Сама мысль, по делу, короткими абзацами. Одна идея на пост лучше, чем пять скомканных.</li>
+          <li><b style="color:var(--ink)">Призыв.</b> Что сделать читателю: поставить реакцию, написать в комментариях, перейти по ссылке, переслать другу. Без призыва человек просто пролистывает.</li>
+        </ul>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как проверить себя:</b> прочитай только первую строку поста. Если её хочется развернуть и читать дальше, зацепка работает.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Дай посту воздух<span class="sub">читаемость и отступы</span></h2>
+      </div>
+      <div class="body">
+        <p>Стена текста отпугивает. Разбивай пост на короткие абзацы по 2-4 строки и оставляй между ними пустую строку. Глаз отдыхает, и пост дочитывают.</p>
+        <p>Главную мысль выдели жирным. Список вари из коротких пунктов. Длину поста держи такой, чтобы её хотелось дочитать, а не такой, что её хочется закрыть.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как проверить себя:</b> открой готовый пост на телефоне. Если он выглядит как сплошной кирпич без пробелов, добавь пустые строки между абзацами.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Используй эмодзи в меру<span class="sub">как приправу, не как кашу</span></h2>
+      </div>
+      <div class="body">
+        <p>Эмодзи помогают, когда их немного: значок в начале строки вместо маркера списка, один смайл к настроению. Когда их в каждом слове, пост выглядит дёшево и хуже читается. Пара штук на пост обычно достаточно.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как проверить себя:</b> убери из поста все эмодзи. Если смысл не пострадал, значит, они были украшением, а не костылём, и пары штук хватит.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Работай со ссылками и хэштегами<span class="sub">аккуратно</span></h2>
+      </div>
+      <div class="body">
+        <p>Ссылку прячь в слово (раздел про форматирование, шаг 3), а не вставляй голым адресом на полстроки. Так пост чище.</p>
+        <p><span class="term" title="Хэштег: слово со знаком решётки впереди, например #книги. По нажатию показывает все посты канала с этим тегом.">Хэштеги</span> это слова со знаком решётки, например #книги. По нажатию они собирают все посты канала с этим тегом, получается как рубрика. Заведи 3-5 постоянных хэштегов под свои темы и ставь их в конце поста. Не сыпь по десять штук, толку от этого нет.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> хэштег в посте стал кликабельным. Нажми на него, откроется список всех постов канала с тем же тегом.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">5</div>
+        <h2>Сделай приветственный закреп<span class="sub">первое, что видит гость</span></h2>
+      </div>
+      <div class="body">
+        <p>Новый человек заходит на канал и решает за пару секунд, подписаться или уйти. Помоги ему: напиши короткий пост о том, про что канал, для кого он и что тут будет полезного. Закрепи его наверху (раздел про постинг, шаг 6).</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как проверить себя:</b> зайди на свой канал так, будто видишь его впервые. По закрепу должно быть понятно, о чём он и зачем подписываться.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">6</div>
+        <h2>Постируй регулярно<span class="sub">ритм важнее рывков</span></h2>
+      </div>
+      <div class="body">
+        <p>Лучше один хороший пост в день или через день стабильно, чем десять за вечер и потом тишина на месяц. От ровного ритма люди привыкают и ждут. Выбери темп, который реально вытянешь надолго, и держи его. Отложенный постинг (раздел про постинг, шаг 4) помогает: заготовил несколько постов заранее, и они выходят сами.</p>
+        <p>Подталкивай к отклику: задавай вопрос, проси реакцию, отвечай в комментариях. Живой канал, где автор на связи, читают охотнее.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как проверить себя:</b> посмотри на даты последних постов. Если промежутки рваные, заведи себе простой план выхода и заряди пару постов в отложенные.</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ===== 8. УПРАВЛЕНИЕ ===== -->
+    <section id="sec-manage">
+      <h2 class="sec-h">Управление: админы, статистика, бусты</h2>
+      <p class="sec-lead">Когда канал зажил, появляются вопросы посложнее: позвать помощника, посмотреть цифры, понять про бусты. Разберём по порядку.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Добавь админа и раздай права<span class="sub">помощник по каналу</span></h2>
+      </div>
+      <div class="body">
+        <p>Админ это человек, которому ты доверяешь часть управления. В настройках канала открой «Администраторы», нажми «Добавить» и выбери человека из контактов. Дальше отметь, что ему можно: писать посты, править и удалять чужие, закреплять, добавлять подписчиков, управлять обсуждением, назначать других админов.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> человек появился в списке администраторов. Теперь он может делать ровно то, что ты ему разрешил, не больше.</span></div>
+        <div class="note warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>Осторожно с правами</b>Право «Добавлять администраторов» даёт человеку много власти. Давай его только тем, кому полностью доверяешь. Полным хозяином канала остаёшься ты, владельца сменить нельзя случайно.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Управляй подписчиками<span class="sub">кто в канале</span></h2>
+      </div>
+      <div class="body">
+        <p>В настройках канала есть раздел «Подписчики». Там виден список тех, кого ты добавил вручную (это первые до 200 человек). Любого можно убрать: нажми на него и выбери удаление. Те, кто подписался сам по ссылке, в этом списке не показываются, и это нормально.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> удалённый человек пропадает из списка и перестаёт получать посты. Заново он сможет подписаться сам по ссылке.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Смотри статистику<span class="sub">что заходит, а что нет</span></h2>
+      </div>
+      <div class="body">
+        <p>Статистика показывает рост подписчиков, охват постов и откуда приходят люди. Она появляется не сразу, а примерно после 50 подписчиков. Когда наберётся, в меню канала (три точки или название канала) появится пункт «Статистика».</p>
+        <p>Смотри не только на просмотры. Полезнее всего пересылки и рост подписчиков: они показывают, какие посты люди реально несут дальше.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> откроется экран с графиками: подписчики, просмотры, уведомления, лучшие посты. Цифры там приблизительные, это нормально.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Разберись с бустами<span class="sub">голоса от подписчиков</span></h2>
+      </div>
+      <div class="body">
+        <p>Буст это голос за твой канал от подписчика с подпиской Телеграм Премиум. Чем больше бустов, тем выше уровень канала, а с уровнями открываются возможности: свой фон, больше эмодзи-реакций, право публиковать сторис от лица канала.</p>
+        <p>Ты сам бусты не ставишь, их дают подписчики. Попросить можно: открой канал, нажми «Усилить» (значок ракеты или молнии) и поделись этой ссылкой с аудиторией. У кого есть Премиум, поддержат в одно нажатие.</p>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> у канала появляется значок уровня буста, а на нужном уровне открываются новые настройки, например выбор фона канала.</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- СЛОВАРИК -->
+    <section>
+      <h2 class="sec-h">Мини-словарик</h2>
+      <p class="sec-lead">Слова, которые встретились выше, простыми словами.</p>
+      <dl class="glossary card" style="padding:22px 24px">
+        <dt>Канал</dt>
+        <dd>Лента, где посты пишешь только ты и админы, а подписчики читают. Без общего чата.</dd>
+        <dt>Группа обсуждений</dt>
+        <dd>Отдельный чат, прицепленный к каналу. В нём живут комментарии к постам.</dd>
+        <dt>Юзернейм</dt>
+        <dd>Короткий адрес канала латиницей после знака @. Из него собирается ссылка t.me.</dd>
+        <dt>Реакции</dt>
+        <dd>Эмодзи под постом, которыми читатель отвечает одним нажатием.</dd>
+        <dt>Отложенный пост</dt>
+        <dd>Пост, который ты подготовил сейчас, а выйдет он сам в выбранное время.</dd>
+        <dt>Альбом</dt>
+        <dd>Несколько фото или видео, склеенные в один пост, который листается свайпом.</dd>
+        <dt>Сжатие</dt>
+        <dd>Уменьшение веса картинки ради скорости. Фото сжимается, файл нет.</dd>
+        <dt>Буст</dt>
+        <dd>Голос за канал от подписчика с Премиумом. Поднимает уровень канала и открывает возможности.</dd>
+        <dt>Премиум</dt>
+        <dd>Платная подписка Телеграма. Только её владельцы могут бустить каналы.</dd>
+      </dl>
+    </section>
+
+    <hr class="rule">
+
+    <!-- ЕСЛИ НЕ ПОЛУЧИЛОСЬ -->
+    <section id="sec-faq">
+      <h2 class="sec-h">Если не получилось</h2>
+      <p class="sec-lead">Частые заминки и что с ними делать. Нажми на строку, откроется ответ.</p>
+      <div class="trouble">
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Юзернейм пишет, что занят или недоступен<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Имя уже кто-то взял или оно слишком короткое. Юзернейм нужен из латинских букв, цифр и нижнего подчёркивания, минимум 5 символов. Добавь слово или цифру, например moi_kanal_pro. Зелёная галочка под полем значит, что имя свободно.</p>
+          </div>
+        </details>
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Не вижу раздел «Статистика»<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Статистика включается не сразу, а примерно после 50 подписчиков. Пока их меньше, пункта просто нет, это не поломка. Набери аудиторию, и раздел появится в меню канала сам.</p>
+          </div>
+        </details>
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Под постами нет кнопки комментариев<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Комментарии работают только через группу обсуждений. Зайди в настройки канала, открой «Обсуждение» и создай или привяжи группу (раздел про оформление, шаг 3). Кнопка появится под постами, которые выйдут после привязки.</p>
+          </div>
+        </details>
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Случайно удалил пост<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Удаление в канале навсегда, вернуть пост нельзя. Если текст ещё помнишь или сохранён, опубликуй заново. На будущее: чтобы исправить опечатку, пользуйся «Изменить», а не «Удалить», тогда пост и просмотры сохранятся.</p>
+          </div>
+        </details>
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>На телефоне не получается сделать текст жирным<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Сначала выдели текст: нажми на слово и подержи, потом потяни маркеры на нужный кусок. Над выделением всплывёт меню. На Android открой три точки, на iPhone листай до пункта со стилями. Там выбери «Жирный». Если меню не появляется, значит, текст ещё не выделен.</p>
+            <p>Второй путь: напечатай слово в двойных звёздочках, например две звёздочки, слово, две звёздочки. Телеграм сам сделает его жирным.</p>
+          </div>
+        </details>
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Фото вышли отдельными постами вместо альбома<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>При отправке была выключена группировка. Выбирай все фото за один раз и проверь, что включён значок или галочка «Сгруппировать». В одном альбоме до 10 файлов. Если их больше, лишние и правда уйдут отдельно.</p>
+          </div>
+        </details>
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Картинка потеряла чёткость<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Когда отправляешь картинку как фото, Телеграм её сжимает. Чтобы сохранить полное качество, отправь её как файл: при добавлении выбери «Файл» вместо «Галереи», или нажми три точки и «Отправить без сжатия». В ленте она будет плашкой-документом, зато без потерь.</p>
+          </div>
+        </details>
+
+        <details class="q">
+          <summary><span class="qm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>Канал не находят, подписчиков нет<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Сами по себе люди не приходят. Проверь, что канал публичный (есть юзернейм), и активно делись ссылкой t.me: в сторис, у друзей, на других площадках. Частный канал в поиске не виден совсем, в него попадают только по ссылке-приглашению.</p>
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <footer>
+      <span>Инструкция обновлена: 22 июня 2026.</span>
+      <a href="../"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Все инструкции</a>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+  // прогресс чтения
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var sc=h.scrollTop||document.body.scrollTop;
+    var mx=(h.scrollHeight-h.clientHeight)||1;bar.style.width=(sc/mx*100)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});upd();
+
+  // кнопки «Копировать»
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var code=btn.parentElement.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(function(){
+        var old=btn.innerHTML;btn.classList.add('done');
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Скопировано';
+        setTimeout(function(){btn.classList.remove('done');btn.innerHTML=old;},1600);
+      });
+    });
+  });
+</script>
+</body>
+</html>

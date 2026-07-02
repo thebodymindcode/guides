@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fable 5 в Claude Code: как подключить и как создавать агентов</title>
+<meta name="description" content="Пошагово и понятно: как включить модель Fable 5 в Claude Code, проверить её, создать своих агентов и применить это к сайту KEO GROUP и платформе Архитектура сознания.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16191f; --soft:#3d434e; --muted:#6b7280; --line:#e9e6df; --line-soft:#f0ede6;
+    --bg:#fbfaf7; --paper:#f5f2ea; --card:#ffffff;
+    --gold:#8f7327; --gold-deep:#6f5915; --gold-soft:#f4eeda; --gold-line:#e7dcb8;
+    --ok:#2f7d57; --ok-soft:#e9f3ec;
+    --warn:#a85a22; --warn-soft:#fbf0e5; --warn-line:#f0dcc4;
+    --info:#3a6691; --info-soft:#eaf1f8; --info-line:#d8e5f1;
+    --radius:18px; --radius-sm:12px;
+    --shadow:0 1px 2px rgba(20,23,31,.04),0 10px 30px rgba(20,23,31,.06);
+    --shadow-sm:0 1px 2px rgba(20,23,31,.05),0 4px 14px rgba(20,23,31,.05);
+    --maxw:760px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:400 18px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw);margin:0 auto;
+    padding:0 18px calc(72px + env(safe-area-inset-bottom));}
+  a{color:var(--gold-deep);text-underline-offset:3px;text-decoration-thickness:1.5px}
+  .progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--gold);z-index:50;transition:width .1s linear}
+  header{padding:38px 0 6px}
+  .kicker{font-size:13.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600}
+  h1{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(32px,7.4vw,48px);
+    line-height:1.06;margin:.34em 0 .3em;letter-spacing:-.012em}
+  .lead{color:var(--soft);font-size:20px;line-height:1.55;margin:0;max-width:58ch}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:7px 14px;font-size:14.5px;color:var(--soft);box-shadow:var(--shadow-sm)}
+  .chip svg{width:16px;height:16px;color:var(--gold)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:24px 24px}
+  .panel-result{background:linear-gradient(180deg,#fffdf6,#fff);border-color:var(--gold-line)}
+  .panel-title{display:flex;align-items:center;gap:11px;font-weight:600;font-size:15px;
+    letter-spacing:.04em;text-transform:uppercase;color:var(--gold-deep);margin:0 0 14px}
+  .panel-title svg{width:22px;height:22px;flex:0 0 auto}
+  .stack{display:grid;gap:34px;margin-top:30px}
+  .stack>*{min-width:0}
+  .step .body,.body>*{min-width:0;max-width:100%}
+  .checklist{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .checklist li{display:flex;gap:12px;align-items:flex-start;font-size:17.5px;color:var(--soft)}
+  .checklist li svg{width:22px;height:22px;flex:0 0 auto;color:var(--ok);margin-top:1px}
+  .toc{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:8px 8px}
+  .toc>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:600;
+    display:flex;align-items:center;justify-content:space-between;border-radius:12px}
+  .toc>summary::-webkit-details-marker{display:none}
+  .toc>summary .chev{width:20px;height:20px;color:var(--muted);transition:transform .2s}
+  .toc[open]>summary .chev{transform:rotate(180deg)}
+  .toc ol{margin:4px 6px 10px;padding-left:0;counter-reset:t;list-style:none}
+  .toc li{counter-increment:t;margin:2px 0}
+  .toc a{display:flex;gap:12px;align-items:baseline;text-decoration:none;color:var(--ink);
+    padding:9px 12px;border-radius:10px;font-size:16.5px}
+  .toc a:hover{background:#fff}
+  .toc a::before{content:counter(t);font-variant-numeric:tabular-nums;font-weight:600;
+    color:var(--gold);min-width:22px;font-size:15px}
+  .step{scroll-margin-top:20px}
+  .step-head{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+  .badge{flex:0 0 auto;width:48px;height:48px;border-radius:14px;background:var(--gold-soft);
+    color:var(--gold-deep);border:1px solid var(--gold-line);display:flex;align-items:center;
+    justify-content:center;font-weight:700;font-size:21px;font-variant-numeric:tabular-nums}
+  .step h2{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(24px,4.6vw,30px);
+    line-height:1.15;margin:0;letter-spacing:-.01em}
+  .step h2 .sub{display:block;font-family:inherit;font-size:15px;font-weight:400;color:var(--muted);
+    letter-spacing:.02em;margin-top:3px;font-style:italic}
+  .step p{margin:0 0 14px;color:var(--ink)}
+  .step .body{padding-left:0}
+  .seen{display:flex;gap:11px;align-items:flex-start;background:var(--ok-soft);border:1px solid #cfe6d8;
+    border-radius:var(--radius-sm);padding:13px 15px;font-size:16.5px;color:#23533c;margin:16px 0 0}
+  .seen svg{width:20px;height:20px;flex:0 0 auto;color:var(--ok);margin-top:2px}
+  .seen b{color:#1c4631}
+  .keys{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0 16px}
+  kbd{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:36px;
+    padding:0 11px;background:#fff;border:1px solid #d8d3c7;border-bottom-width:2px;border-radius:9px;
+    font:600 16px/1 -apple-system,system-ui,sans-serif;color:var(--ink);box-shadow:var(--shadow-sm)}
+  .keys .plus{color:var(--muted);font-weight:600}
+  figure.code{margin:18px 0 0}
+  .code-cap{font-size:14px;color:var(--muted);margin:0 0 8px}
+  .code-box{position:relative;background:#1c2027;border-radius:var(--radius-sm);overflow:hidden;
+    box-shadow:var(--shadow)}
+  .code-box pre{margin:0;padding:18px 56px 18px 18px;overflow-x:auto;
+    font:500 15px/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#e8e6df}
+  .copy{position:absolute;top:10px;right:10px;display:inline-flex;align-items:center;gap:6px;
+    background:#2c323b;color:#cfd4dc;border:1px solid #3a414c;border-radius:9px;padding:7px 11px;
+    font-size:13.5px;cursor:pointer;transition:.15s}
+  .copy:hover{background:#353c47;color:#fff}
+  .copy svg{width:15px;height:15px}
+  .copy.done{background:var(--ok);border-color:var(--ok);color:#fff}
+  figure.shot{margin:18px 0 0}
+  .frame{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff;
+    box-shadow:var(--shadow)}
+  .frame img{display:block;width:100%;height:auto}
+  figcaption{font-size:15px;color:var(--muted);margin-top:10px;line-height:1.5}
+  figcaption .n{display:inline-flex;width:21px;height:21px;border-radius:50%;background:var(--gold);
+    color:#fff;font-size:13px;font-weight:700;align-items:center;justify-content:center;margin-right:6px;
+    vertical-align:-3px}
+  .note{display:flex;gap:13px;border-radius:var(--radius-sm);padding:15px 17px;margin:18px 0 0;
+    font-size:16.5px;line-height:1.6}
+  .note svg{width:22px;height:22px;flex:0 0 auto;margin-top:1px}
+  .note b{display:block;margin-bottom:2px}
+  .note.tip{background:var(--gold-soft);border:1px solid var(--gold-line)}
+  .note.tip svg{color:var(--gold-deep)} .note.tip b{color:var(--gold-deep)}
+  .note.warn{background:var(--warn-soft);border:1px solid var(--warn-line)}
+  .note.warn svg{color:var(--warn)} .note.warn b{color:var(--warn)}
+  .note.info{background:var(--info-soft);border:1px solid var(--info-line)}
+  .note.info svg{color:var(--info)} .note.info b{color:var(--info)}
+  .term{border-bottom:1.5px dotted var(--gold);cursor:help;font-weight:500}
+  .glossary{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .glossary dt{font-weight:600;margin-top:14px}
+  .glossary dt:first-of-type{margin-top:0}
+  .glossary dd{margin:3px 0 0;color:var(--soft);font-size:16.5px}
+  .sec-h{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:clamp(26px,5vw,34px);
+    line-height:1.12;margin:0 0 6px;letter-spacing:-.01em}
+  .sec-lead{color:var(--muted);margin:0 0 18px;font-size:17.5px}
+  .trouble{display:grid;gap:12px}
+  details.q{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-sm);
+    box-shadow:var(--shadow-sm);overflow:hidden}
+  details.q>summary{list-style:none;cursor:pointer;padding:16px 18px;font-weight:600;font-size:17px;
+    display:flex;gap:12px;align-items:flex-start}
+  details.q>summary::-webkit-details-marker{display:none}
+  details.q>summary .qm{flex:0 0 auto;width:24px;height:24px;border-radius:7px;background:var(--warn-soft);
+    color:var(--warn);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;margin-top:1px}
+  details.q>summary .chev{margin-left:auto;width:20px;height:20px;color:var(--muted);transition:transform .2s;flex:0 0 auto}
+  details.q[open]>summary .chev{transform:rotate(180deg)}
+  details.q .ans{padding:0 18px 18px 54px;color:var(--soft);font-size:16.5px}
+  details.q .ans p{margin:0 0 8px}
+  hr.rule{border:0;border-top:1px solid var(--line);margin:30px 0}
+  footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--line);
+    color:#9aa0aa;font-size:14.5px;display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center}
+  footer a{color:var(--soft);text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  footer a:hover{color:var(--gold-deep)}
+  footer svg{width:16px;height:16px}
+  @media(min-width:820px){
+    body{font-size:19px}
+    header{padding:54px 0 6px}
+    .card{padding:28px 30px}
+    .step .body{padding-left:64px}
+  }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="wrap">
+  <header>
+    <div class="kicker">Инструкция для Алексея</div>
+    <h1>Fable 5 в Claude Code</h1>
+    <p class="lead">Как включить самую мощную модель Fable 5, проверить её, создать своих агентов и направить всё это на два твоих проекта: сайт KEO GROUP и платформу «Архитектура сознания». По шагам, спокойно, с нуля.</p>
+    <div class="meta">
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Минут на чтение: 15</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4-8 4-8-4 8-4z"/><path d="M4 11l8 4 8-4"/></svg>Уровень: с нуля</span>
+      <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>Нужен: Claude Code</span>
+    </div>
+  </header>
+
+  <div class="stack">
+
+    <section class="card panel-result">
+      <p class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></svg>Что получится в итоге</p>
+      <p style="margin:0 0 12px">Ты включишь Fable 5 в Claude Code за одну команду, проверишь, что она реально активна, и создашь свою команду агентов: помощников со своей моделью и своей ролью. А в конце соберёшь под свои проекты готовую бригаду: архитектор проектирует платформу «Архитектура сознания», дизайнер шлифует сайт KEO GROUP, проверяющий ловит ошибки.</p>
+      <p style="margin:0">Все файлы и команды здесь готовы к копированию. Открываешь, копируешь, вставляешь.</p>
+    </section>
+
+    <section class="card">
+      <p class="panel-title" style="color:var(--ink);border:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Что нужно перед началом</p>
+      <ul class="checklist">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Claude Code уже установлен (это твой обычный помощник в терминале). Нужна версия 2.1.170 или новее, ниже проверим одной командой.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Подписка Claude (Pro, Max, Team или Enterprise). Fable 5 доступна на всех этих тарифах.</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Терминал. Это чёрное окно, где ты пишешь команды и запускаешь Claude Code. Ты им уже пользуешься.</li>
+      </ul>
+    </section>
+
+    <details class="toc" open>
+      <summary>С чего начнём и к чему придём<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <ol>
+        <li><a href="#step1">Проверить версию Claude Code</a></li>
+        <li><a href="#step2">Включить Fable 5 командой /model</a></li>
+        <li><a href="#step3">Закрепить Fable 5 навсегда</a></li>
+        <li><a href="#step4">Убедиться, что активна Fable 5</a></li>
+        <li><a href="#effort">Глубина и скорость: /effort и /fast</a></li>
+        <li><a href="#step5">Создать папку для агентов</a></li>
+        <li><a href="#step6">Создать первого агента</a></li>
+        <li><a href="#step7">Вызвать агента в работу</a></li>
+        <li><a href="#step8">Управлять агентами через /agents</a></li>
+        <li><a href="#projects">Применить к моим проектам</a></li>
+        <li><a href="#quick">Быстрая проверка</a></li>
+      </ol>
+    </details>
+    <section class="card">
+      <p class="panel-title" style="color:var(--ink);border:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>Коротко: что такое Fable 5 и зачем она</p>
+      <p style="margin:0 0 12px">Fable 5 это самая мощная модель Claude на сегодня. Она заточена под сложные и долгие задачи: держит в голове всю картину целиком в длинной сессии, чаще сама перепроверяет свою работу и сначала изучает, а потом делает. Как раз то, что нужно, когда задачу обычно приходится дробить на куски: например, спроектировать архитектуру целой платформы.</p>
+      <p style="margin:0 0 8px">Чем она отличается от других моделей, простыми словами:</p>
+      <ul style="margin:0;padding-left:20px;color:var(--soft);font-size:17px;line-height:1.6">
+        <li style="margin-bottom:7px"><b style="color:var(--ink)">Fable 5</b> самые сложные и долгие задачи, глубокий ресёрч, поиск причины ошибки. Медленнее и дороже, но самая умная.</li>
+        <li style="margin-bottom:7px"><b style="color:var(--ink)">Opus 4.8</b> сложные рассуждения и умеренно долгие задачи. Средняя скорость.</li>
+        <li style="margin-bottom:7px"><b style="color:var(--ink)">Sonnet</b> ежедневное кодирование и быстрые правки. Быстрая рабочая лошадка.</li>
+        <li><b style="color:var(--ink)">Haiku</b> простые задачи, максимальная скорость и низкая цена.</li>
+      </ul>
+      <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Про цену</b>На API Fable 5 стоит 10 долларов за миллион входных слов-кусочков и 50 долларов за миллион выходных (это дороже Opus, топ-уровень). Внутри подписки Claude она тратится из твоих кредитов, отдельно платить не надо. <span class="term" title="Токен: кусочек текста, которым модель меряет объём. Примерно одно короткое слово или часть слова.">Слово-кусочек</span> это токен, единица измерения объёма текста.</span></div>
+    </section>
+
+    <h2 class="sec-h" style="margin-top:8px">Этап 1. Подключить Fable 5</h2>
+
+    <section class="step" id="step1">
+      <div class="step-head">
+        <div class="badge">1</div>
+        <h2>Проверь версию Claude Code<span class="sub">Fable 5 нужна версия 2.1.170 и новее</span></h2>
+      </div>
+      <div class="body">
+        <p>Открой терминал, где ты запускаешь Claude Code, и вставь команду. Она покажет номер версии.</p>
+        <figure class="code">
+          <p class="code-cap">Показывает установленную версию Claude Code.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>claude --version</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> в ответ появится номер, например 2.1.170 или выше. Если число такое же или больше, всё готово, иди дальше.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Версия старее?</b>Обнови Claude Code командой <code>claude update</code> и снова проверь версию.</span></div>
+      </div>
+    </section>
+
+    <section class="step" id="step2">
+      <div class="step-head">
+        <div class="badge">2</div>
+        <h2>Включи Fable 5 командой /model<span class="sub">самый быстрый способ</span></h2>
+      </div>
+      <div class="body">
+        <p>Запусти Claude Code как обычно. Внутри его окна набери одну из команд. Первая откроет список моделей, вторая сразу выберет Fable 5.</p>
+        <figure class="code">
+          <p class="code-cap">Открывает список моделей для выбора.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>/model</code></pre>
+          </div>
+        </figure>
+        <figure class="code">
+          <p class="code-cap">Сразу переключает на Fable 5, без списка.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>/model fable</code></pre>
+          </div>
+        </figure>
+        <p>Если открылся список, он выглядит примерно так. Двигайся стрелками вверх и вниз, выбирай Enter.</p>
+        <figure class="shot">
+          <div class="code-box"><pre><code>  Выбор модели
+  ------------------------------------
+  &gt; Fable 5   (claude-fable-5)
+      Самая мощная. Сложные задачи.
+      Контекст 1M. Дороже других.
+
+    Opus 4.8  (claude-opus-4-8)
+      Сложные рассуждения. Средняя.
+
+    Sonnet
+      Ежедневное кодирование. Быстрая.
+
+    Haiku     (claude-haiku-4-5)
+      Простое и быстрое. Дёшево.
+  ------------------------------------
+  Enter выбрать и сохранить
+  s только эта сессия
+  стрелки двигаться   q отмена</code></pre></div>
+          <figcaption><span class="n">1</span>Так выглядит выбор модели. Fable 5 сверху, стрелками наведись на неё и нажми Enter.</figcaption>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> список закроется, а в строке ввода снизу появится пометка, что активна Fable 5. Дальше Claude Code отвечает уже этой моделью.</span></div>
+        <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Только на один раз</b>В списке нажми клавишу <kbd style="height:26px;min-width:24px;font-size:13px">s</kbd> вместо Enter, тогда Fable 5 включится только для текущей сессии, а после выхода вернётся прежняя модель.</span></div>
+      </div>
+    </section>
+    <section class="step" id="step3">
+      <div class="step-head">
+        <div class="badge">3</div>
+        <h2>Закрепи Fable 5 навсегда<span class="sub">чтобы не выбирать каждый раз</span></h2>
+      </div>
+      <div class="body">
+        <p>Способ из шага 2 держится, пока ты не переключишь модель. Если хочешь, чтобы Fable 5 включалась сама при каждом запуске, пропиши её в файле настроек. Файл лежит по адресу <code>~/.claude/settings.json</code>. Значок <code>~</code> это твоя домашняя папка.</p>
+        <p>Открой этот файл и впиши внутрь строку с моделью. Если файла ещё нет, создай его с таким содержимым:</p>
+        <figure class="code">
+          <p class="code-cap">Содержимое файла ~/.claude/settings.json: Fable 5 станет моделью по умолчанию.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>{
+  "model": "fable"
+}</code></pre>
+          </div>
+        </figure>
+        <p>Есть ещё два быстрых способа на одну сессию, без правки файла. Первый: запустить Claude Code сразу на Fable. Второй: задать модель через переменную окружения перед запуском.</p>
+        <figure class="code">
+          <p class="code-cap">Запуск Claude Code сразу на Fable 5 (только эта сессия).</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>claude --model fable</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> после правки файла закрой и снова запусти Claude Code. Он стартует уже на Fable 5, ничего выбирать не надо.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Кто кого перебивает</b>Если способы спорят, порядок такой: переменная окружения важнее флага при запуске, флаг важнее файла настроек, файл важнее модели по умолчанию для твоего тарифа. Проще всего держать одну строку в settings.json и не путаться.</span></div>
+      </div>
+    </section>
+
+    <section class="step" id="step4">
+      <div class="step-head">
+        <div class="badge">4</div>
+        <h2>Убедись, что активна именно Fable 5<span class="sub">одна команда проверки</span></h2>
+      </div>
+      <div class="body">
+        <p>Чтобы не гадать, набери внутри Claude Code команду статуса. Она покажет версию, текущую модель и твой аккаунт.</p>
+        <figure class="code">
+          <p class="code-cap">Показывает версию, активную модель и аккаунт.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>/status</code></pre>
+          </div>
+        </figure>
+        <figure class="shot">
+          <div class="code-box"><pre><code>  Статус Claude Code
+  ------------------------------------
+  Версия:   2.1.170
+  Модель:   Fable 5 (claude-fable-5)
+  Аккаунт:  твой тариф Claude
+  Связь:    в порядке
+  ------------------------------------</code></pre></div>
+          <figcaption><span class="n">1</span>Так выглядит ответ /status. В строке «Модель» должно стоять Fable 5.</figcaption>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> в строке «Модель» стоит Fable 5 (claude-fable-5). Если так, подключение сделано, можно работать.</span></div>
+      </div>
+    </section>
+
+    <section id="effort">
+      <h2 class="sec-h">Глубина и скорость: /effort и /fast</h2>
+      <p class="sec-lead">Две команды, которые часто путают. Одну стоит знать, вторую не трогать с Fable.</p>
+      <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg><span><b>/effort это глубина мышления</b>Чем выше уровень, тем дольше и тщательнее Fable думает. Для сложных задач вроде архитектуры платформы ставь высокий уровень командой <code>/effort xhigh</code> или <code>/effort max</code>. Для мелочей хватит <code>/effort medium</code>. Уровни: low, medium, high, xhigh, max.</span></div>
+      <div class="note warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg><span><b>/fast с Fable не работает</b>Быстрый режим <code>/fast</code> это не отдельная модель, а ускорение для Opus (до 2.5 раза быстрее, но дороже). С Fable, Sonnet и Haiku он не работает: если включить /fast, Claude Code переключится на Opus 4.8. Для Fable глубину дают через /effort, а не через /fast.</span></div>
+      <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Про защиту</b>У Fable есть встроенная проверка на опасные темы (кибербезопасность, биология). Если твой запрос случайно под неё попадёт, Claude Code сам временно переключится на Opus 4.8 и покажет уведомление. Для сайтов и платформы это не помеха.</span></div>
+    </section>
+    <h2 class="sec-h" style="margin-top:8px">Этап 2. Создать своих агентов</h2>
+
+    <section class="card">
+      <p class="panel-title" style="color:var(--ink);border:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>Коротко: что такое агент</p>
+      <p style="margin:0 0 12px"><span class="term" title="Субагент: отдельный помощник со своей задачей, своей моделью и своими правами. Работает в стороне и не засоряет основной разговор.">Агент</span> (полное имя субагент) это отдельный помощник со своей ролью, своей моделью и своими правами. Он работает в стороне, в своём окне памяти, и не мешает основному разговору. Ты можешь дать одному агенту Fable 5 и роль архитектора, другому более быструю модель и роль проверяющего.</p>
+      <p style="margin:0">Чем это отличается от похожих штук: <b>скил</b> это готовый приём внутри основного разговора (как твои /humanize или /cta). <b>Агент</b> это отдельный работник со своей моделью. <b>Слэш-команда</b> это встроенная кнопка вроде /model или /effort. Дальше делаем именно агентов.</p>
+    </section>
+
+    <section class="step" id="step5">
+      <div class="step-head">
+        <div class="badge">5</div>
+        <h2>Создай папку для агентов<span class="sub">где Claude Code их ищет</span></h2>
+      </div>
+      <div class="body">
+        <p>Агенты это простые текстовые файлы в специальной папке. Есть два места. Первое для агентов на все проекты, второе для агентов только этого проекта.</p>
+        <ul style="margin:0 0 14px;padding-left:20px;color:var(--soft);font-size:17px;line-height:1.6">
+          <li style="margin-bottom:7px"><code>~/.claude/agents/</code> общие агенты, видны во всех проектах.</li>
+          <li><code>.claude/agents/</code> внутри папки проекта, эти агенты живут только в нём и сохраняются в git вместе с кодом.</li>
+        </ul>
+        <p>Создай общую папку для агентов одной командой в терминале:</p>
+        <figure class="code">
+          <p class="code-cap">Создаёт папку для твоих общих агентов.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>mkdir -p ~/.claude/agents</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> команда молча выполнится, без ошибки. Папка готова. Если папка уже была, тоже ничего страшного, ошибки не будет.</span></div>
+      </div>
+    </section>
+
+    <section class="step" id="step6">
+      <div class="step-head">
+        <div class="badge">6</div>
+        <h2>Создай первого агента<span class="sub">файл architect.md на Fable 5</span></h2>
+      </div>
+      <div class="body">
+        <p>Каждый агент это один файл с расширением <code>.md</code>. Внутри две части. Сверху между строками из трёх дефисов идёт <span class="term" title="Frontmatter: короткий блок настроек в самом верху файла между строками из трёх дефисов. Задаёт имя агента, модель, права.">заголовок настроек</span> (имя, модель, права). Ниже обычными словами роль агента.</p>
+        <p>Создай файл <code>~/.claude/agents/architect.md</code> и вставь в него это. Обязательные строки только name и description, остальное по желанию.</p>
+        <figure class="code">
+          <p class="code-cap">Файл ~/.claude/agents/architect.md. Агент-архитектор на Fable 5 с глубоким мышлением.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>---
+name: architect
+description: Архитектор для крупных решений с глубоким рассуждением
+tools: Read, Bash, Grep, Glob
+model: fable
+effort: xhigh
+memory: user
+---
+
+Ты главный архитектор системы с опытом 15 лет и больше.
+Когда тебя просят про архитектуру, ты тщательно изучаешь
+контекст, взвешиваешь плюсы и минусы, рассматриваешь
+несколько вариантов и даёшь обоснованную рекомендацию.
+
+Порядок работы:
+1. Прочитай всё, что уже есть по проекту.
+2. Пойми ограничения и цели.
+3. Рассмотри несколько вариантов решения.
+4. Дай рекомендацию и объясни, почему именно она.
+
+Проверяй файл MEMORY.md, чтобы не повторять старые решения.</code></pre>
+          </div>
+        </figure>
+        <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Что значат строки</b><code>name</code> короткое имя агента. <code>description</code> когда его звать. <code>tools</code> что ему разрешено (читать, искать, запускать команды). <code>model</code> его модель, тут fable. <code>effort</code> глубина мышления. <code>memory: user</code> своя память между сессиями. Можно поставить <code>model: inherit</code>, тогда агент возьмёт модель основной сессии.</span></div>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> файл сохранён в папке agents. Запусти Claude Code и набери <code>/agents</code>, архитектор появится в списке Library.</span></div>
+      </div>
+    </section>
+    <section class="step" id="step7">
+      <div class="step-head">
+        <div class="badge">7</div>
+        <h2>Вызови агента в работу<span class="sub">три способа</span></h2>
+      </div>
+      <div class="body">
+        <p>Агент есть, теперь его надо позвать. Способа три, выбирай удобный.</p>
+        <ul style="margin:0 0 14px;padding-left:20px;color:var(--soft);font-size:17px;line-height:1.6">
+          <li style="margin-bottom:8px"><b style="color:var(--ink)">Сам подберёт.</b> Просто опиши задачу словами. Если она подходит под роль агента из его description, Claude Code сам его выберет.</li>
+          <li style="margin-bottom:8px"><b style="color:var(--ink)">Назови прямо.</b> Напиши в разговоре: «Используй architect и спроектируй структуру платформы». Или через собаку: <code>@architect посмотри на это</code>.</li>
+          <li><b style="color:var(--ink)">Запусти всю сессию агентом.</b> В терминале командой ниже.</li>
+        </ul>
+        <figure class="code">
+          <p class="code-cap">Запускает Claude Code сразу в роли агента architect.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>claude --agent architect</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> в ответе появится пометка, что работает агент architect. Он отвечает в своём стиле и на своей модели Fable 5, а основной разговор остаётся чистым.</span></div>
+      </div>
+    </section>
+
+    <section class="step" id="step8">
+      <div class="step-head">
+        <div class="badge">8</div>
+        <h2>Управляй агентами через /agents<span class="sub">создать, поправить, удалить</span></h2>
+      </div>
+      <div class="body">
+        <p>Внутри Claude Code набери команду. Откроется менеджер агентов с двумя вкладками: Running (кто работает сейчас) и Library (все доступные).</p>
+        <figure class="code">
+          <p class="code-cap">Открывает менеджер агентов.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>/agents</code></pre>
+          </div>
+        </figure>
+        <figure class="shot">
+          <div class="code-box"><pre><code>  Менеджер агентов
+  ------------------------------------
+  [ Running ]   [ Library ]
+  ------------------------------------
+  &gt; architect        (user)
+      Архитектор, глубокие решения
+
+    frontend-designer (user)
+      Премиум-вёрстка страниц
+
+    reviewer          (user)
+      Проверка кода и вёрстки
+
+    + Создать нового агента
+  ------------------------------------
+  e править   d удалить   c создать
+  Enter открыть   q выход</code></pre></div>
+          <figcaption><span class="n">1</span>Так выглядит /agents. Вкладка Library, твои агенты с пометкой user, снизу пункт создать нового.</figcaption>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> ты видишь список своих агентов. Можно нажать c и создать нового прямо тут, тогда Claude Code сам поможет написать его роль.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Внешние инструменты (MCP)</b>Если агенту нужен доступ к GitHub, базе данных или другому сервису, это делается через MCP, стандарт подключения внешних инструментов. Команда <code>/mcp</code> внутри Claude Code, настройки в файле <code>~/.claude/.mcp.json</code>. Для старта тебе это не нужно, вернёшься, когда понадобится.</span></div>
+      </div>
+    </section>
+    <h2 class="sec-h" id="projects" style="margin-top:8px">Этап 3. Применить к моим проектам</h2>
+    <p class="sec-lead">Как навести Fable 5 и агентов на сайт KEO GROUP и на платформу «Архитектура сознания».</p>
+
+    <section class="card panel-result">
+      <p class="panel-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>Зачем тут именно Fable 5</p>
+      <p style="margin:0 0 12px">Два твоих проекта это большие и целостные задачи. Спроектировать платформу под много курсов (как GetCourse) с личным кабинетом, прогрессом и оплатой. Довести сайт на 40 с лишним страниц до премиум-уровня. Тут важно держать всю картину сразу: как одно решение тянет за собой другое.</p>
+      <p style="margin:0">Быстрая модель хороша для мелких правок, но на большой архитектуре она теряет нить. Fable 5 держит всё целиком, рассуждает глубоко и сама себя перепроверяет. Поэтому под проектирование и большой редизайн берём именно её, с высоким уровнем <code>/effort</code>.</p>
+    </section>
+
+    <section class="card">
+      <p class="panel-title" style="color:var(--ink);border:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Готовая команда агентов под проект</p>
+      <p style="margin:0 0 6px">Ниже четыре готовых агента. Архитектор у тебя уже есть из шага 6. Добавь ещё трёх: дизайнер, проверяющий и исследователь. Каждый файл клади в <code>~/.claude/agents/</code>.</p>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge" style="background:var(--paper);border-color:var(--line);color:var(--ink)">2</div>
+        <h2>Агент frontend-designer<span class="sub">премиум-вёрстка страниц KEO GROUP</span></h2>
+      </div>
+      <div class="body">
+        <p>Файл <code>~/.claude/agents/frontend-designer.md</code>. Отвечает за красивую вёрстку и редизайн страниц сайта.</p>
+        <figure class="code">
+          <p class="code-cap">Файл frontend-designer.md. Дизайнер-верстальщик премиум-уровня.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>---
+name: frontend-designer
+description: Премиум-вёрстка и редизайн страниц сайта
+tools: Read, Edit, Write, Bash, Grep, Glob
+model: fable
+effort: high
+---
+
+Ты дизайнер-верстальщик премиум-уровня.
+Делаешь светлый дорогой вид, всё ровно и выровнено,
+ничего не наезжает, идеальная мобильная версия.
+
+Правила:
+1. Светлый премиум, чистые карточки, свои иконки по смыслу.
+2. Сетки заполнены без дыр, единое выравнивание.
+3. Красивые переносы, ни одной висячей буквы-сироты.
+4. Проверяй вид на телефоне и на компьютере.
+5. Нигде ни одного длинного тире.</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> файл сохранён, в <code>/agents</code> появился frontend-designer.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge" style="background:var(--paper);border-color:var(--line);color:var(--ink)">3</div>
+        <h2>Агент reviewer<span class="sub">проверяет и не имеет права ломать</span></h2>
+      </div>
+      <div class="body">
+        <p>Файл <code>~/.claude/agents/reviewer.md</code>. Проверяет код и вёрстку, но сам ничего не меняет. Для этого у него более быстрая модель sonnet и запрет на запись файлов.</p>
+        <figure class="code">
+          <p class="code-cap">Файл reviewer.md. Проверяющий без прав на изменение файлов.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>---
+name: reviewer
+description: Проверяет код и вёрстку, находит ошибки
+tools: Read, Bash, Grep, Glob
+disallowedTools: Write, Edit
+model: sonnet
+---
+
+Ты придирчивый проверяющий.
+Смотришь на код и вёрстку и находишь проблемы,
+но сам файлы не трогаешь, только отчёт.
+
+Проверяй:
+1. Всё ли ровно и ничего не наезжает.
+2. Нет ли ошибок и битых ссылок.
+3. Хорошо ли на телефоне.
+4. Понятный ли живой русский, без длинных тире.
+Верни список проблем и как их починить.</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> файл сохранён. Этот агент теперь может только читать и отчитываться, случайно ничего не сломает.</span></div>
+      </div>
+    </section>
+    <section class="step">
+      <div class="step-head">
+        <div class="badge" style="background:var(--paper);border-color:var(--line);color:var(--ink)">4</div>
+        <h2>Агент researcher<span class="sub">глубокий ресёрч под платформу</span></h2>
+      </div>
+      <div class="body">
+        <p>Файл <code>~/.claude/agents/researcher.md</code>. Копает вглубь: как устроен GetCourse, какие приёмы у лучших платформ с курсами. Работает в стороне, чтобы не забивать основной разговор кучей текста.</p>
+        <figure class="code">
+          <p class="code-cap">Файл researcher.md. Исследователь для глубокого сбора и разбора.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>---
+name: researcher
+description: Глубокий ресёрч и разбор чужих решений
+tools: Read, Bash, Grep, Glob
+model: fable
+effort: high
+---
+
+Ты исследователь. Копаешь тему вглубь и возвращаешь
+сжатую выжимку, а не простыню текста.
+
+Правила:
+1. Ищи несколько источников перед выводом.
+2. Показывай, откуда взял информацию.
+3. Отмечай, где есть неопределённость.
+4. В конце дай короткий список выводов и что применить.</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> в папке agents лежат все четыре файла: architect, frontend-designer, reviewer, researcher. В <code>/agents</code> видно всех.</span></div>
+      </div>
+    </section>
+
+    <section class="step">
+      <div class="step-head">
+        <div class="badge" style="background:var(--paper);border-color:var(--line);color:var(--ink)">5</div>
+        <h2>Собери всё в рабочий сценарий<span class="sub">проектируем платформу за один заход</span></h2>
+      </div>
+      <div class="body">
+        <p>Вот как это выглядит на деле, когда проектируешь платформу «Архитектура сознания». По порядку.</p>
+        <ol style="margin:0 0 14px;padding-left:22px;color:var(--ink);font-size:17.5px;line-height:1.65">
+          <li style="margin-bottom:9px">Запусти Claude Code в папке проекта на Fable 5: <code>claude --model fable</code>.</li>
+          <li style="margin-bottom:9px">Задай глубокое мышление: набери <code>/effort xhigh</code>.</li>
+          <li style="margin-bottom:9px">Позови исследователя: «Используй researcher, разбери, как устроена платформа с курсами вроде GetCourse, и выпиши, что взять для нас».</li>
+          <li style="margin-bottom:9px">Позови архитектора: «Используй architect, на основе ресёрча спроектируй архитектуру платформы под много курсов: личный кабинет, роли, прогресс учеников, оплата, структура базы данных».</li>
+          <li style="margin-bottom:9px">Позови проверяющего: «Используй reviewer, проверь предложенную архитектуру на слабые места и риски».</li>
+          <li>Для сайта KEO GROUP тем же приёмом: «Используй frontend-designer, доведи страницу услуги до премиум-вида», потом reviewer на проверку.</li>
+        </ol>
+        <figure class="code">
+          <p class="code-cap">Начало сессии под проектирование: запуск на Fable и глубокое мышление.</p>
+          <div class="code-box">
+            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
+            <pre><code>claude --model fable
+/effort xhigh</code></pre>
+          </div>
+        </figure>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> ты получишь связный план архитектуры от архитектора и отдельный разбор рисков от проверяющего. Разные роли смотрят на задачу с разных сторон, и решение выходит крепче.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Планка по умолчанию</b>Проси у агентов современные и сильные решения сразу: быстрый интерфейс, мгновенный отклик, идеальная мобильная версия, чистая вёрстка. Прогресс учеников на платформе храни в базе, а не в браузере, чтобы работало на любом устройстве. Это тот самый премиум-уровень, который тебе нужен.</span></div>
+      </div>
+    </section>
+
+    <hr class="rule">
+    <section id="quick">
+      <h2 class="sec-h">Быстрая проверка</h2>
+      <p class="sec-lead">Пять команд, чтобы убедиться, что всё на месте.</p>
+      <div class="card">
+        <ul class="checklist">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>claude --version</code> версия 2.1.170 или новее.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>/status</code> в строке «Модель» стоит Fable 5.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>/model</code> Fable 5 выделена в списке.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>/agents</code> видны твои агенты (architect и другие).</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>/effort</code> для сложных задач стоит xhigh или max.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <section>
+      <h2 class="sec-h">Мини-словарик</h2>
+      <p class="sec-lead">Слова, которые встретились выше, простыми словами.</p>
+      <dl class="glossary card" style="padding:22px 24px">
+        <dt>Fable 5</dt>
+        <dd>Самая мощная модель Claude. Для сложных и долгих задач, где важно держать всю картину целиком.</dd>
+        <dt>Модель</dt>
+        <dd>Мозг помощника. Разные модели умнее или быстрее и стоят по-разному. Fable самая умная, Haiku самая быстрая.</dd>
+        <dt>Агент (субагент)</dt>
+        <dd>Отдельный помощник со своей ролью, моделью и правами. Работает в стороне и не засоряет основной разговор.</dd>
+        <dt>Заголовок настроек (frontmatter)</dt>
+        <dd>Блок в самом верху файла агента между строками из трёх дефисов. Задаёт имя, модель, права агента.</dd>
+        <dt>effort</dt>
+        <dd>Глубина мышления. Чем выше, тем дольше и тщательнее модель думает. Уровни от low до max.</dd>
+        <dt>Токен (слово-кусочек)</dt>
+        <dd>Единица объёма текста. Примерно короткое слово или его часть. В токенах меряют контекст и цену.</dd>
+        <dt>MCP</dt>
+        <dd>Стандарт подключения внешних инструментов (GitHub, база данных, Slack), чтобы агент мог ими пользоваться.</dd>
+      </dl>
+    </section>
+
+    <hr class="rule">
+
+    <section>
+      <h2 class="sec-h">Если не получилось</h2>
+      <p class="sec-lead">Частые заминки и что с ними делать. Нажми на вопрос, откроется ответ.</p>
+      <div class="trouble">
+        <details class="q">
+          <summary><span class="qm">?</span>В списке /model нет Fable 5<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Скорее всего старая версия Claude Code. Проверь <code>claude --version</code>, нужна 2.1.170 или новее. Обнови командой <code>claude update</code> и открой /model заново.</p>
+            <p>Ещё проверь, что ты вошёл под своим тарифом Claude (Pro, Max, Team или Enterprise). Команда <code>/status</code> покажет аккаунт.</p>
+          </div>
+        </details>
+        <details class="q">
+          <summary><span class="qm">?</span>Выбрал Fable, а /status показывает Opus 4.8<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Это защита Fable сработала на теме запроса и временно вернула Opus 4.8. Для сайтов и платформы это редкость. Начни новый запрос, переформулируй нейтральнее, и Fable вернётся.</p>
+            <p>Если ты случайно включал <code>/fast</code>, он тоже переводит на Opus. Выключи его: <code>/fast off</code>.</p>
+          </div>
+        </details>
+        <details class="q">
+          <summary><span class="qm">?</span>Агент не появился в /agents<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Проверь, что файл лежит именно в <code>~/.claude/agents/</code> и имя оканчивается на <code>.md</code>. И что в самом верху есть блок между строками из трёх дефисов со строками name и description.</p>
+            <p>Перезапусти Claude Code и снова открой /agents. Новые файлы подхватываются при запуске.</p>
+          </div>
+        </details>
+        <details class="q">
+          <summary><span class="qm">?</span>Настройки в settings.json не применяются<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Частая причина, забытая запятая или кавычка в файле. Внутри должно быть ровно так: фигурные скобки, а внутри <code>"model": "fable"</code>. Лишних запятых в конце быть не должно.</p>
+            <p>Ещё проверь, не задана ли переменная окружения ANTHROPIC_MODEL, она перебивает файл. И перезапусти Claude Code после правки.</p>
+          </div>
+        </details>
+        <details class="q">
+          <summary><span class="qm">?</span>Fable думает слишком долго<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+          <div class="ans">
+            <p>Это нормально для больших задач, Fable сначала изучает, потом делает. Если ждать не хочется, снизь глубину: <code>/effort medium</code>. Для мелких правок можно переключиться на более быстрый Sonnet командой <code>/model sonnet</code>, а на архитектуру вернуть Fable.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer>
+      <span>Инструкция обновлена: 2 июля 2026.</span>
+      <a href="../"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Все инструкции</a>
+    </footer>
+
+  </div>
+</div>
+<script>
+  var bar=document.getElementById('progress');
+  function upd(){var h=document.documentElement;var sc=h.scrollTop||document.body.scrollTop;
+    var mx=(h.scrollHeight-h.clientHeight)||1;bar.style.width=(sc/mx*100)+'%';}
+  document.addEventListener('scroll',upd,{passive:true});upd();
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var code=btn.parentElement.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(function(){
+        var old=btn.innerHTML;btn.classList.add('done');
+        btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Скопировано';
+        setTimeout(function(){btn.classList.remove('done');btn.innerHTML=old;},1600);
+      });
+    });
+  });
+</script>
+</body>
+</html>

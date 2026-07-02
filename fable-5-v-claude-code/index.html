@@ -208,6 +208,16 @@
       <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Про цену</b>На API Fable 5 стоит 10 долларов за миллион входных слов-кусочков и 50 долларов за миллион выходных (это дороже Opus, топ-уровень). Внутри подписки Claude она тратится из твоих кредитов, отдельно платить не надо. <span class="term" title="Токен: кусочек текста, которым модель меряет объём. Примерно одно короткое слово или часть слова.">Слово-кусочек</span> это токен, единица измерения объёма текста.</span></div>
     </section>
 
+    <section class="card" style="border-color:var(--info-line);background:var(--info-soft)">
+      <p class="panel-title" style="color:var(--info)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg>Важно: где что нажимать в VS Code</p>
+      <p style="margin:0 0 12px">Ты работаешь в редакторе VS Code с расширением Claude Code (это та панель, что у тебя на экране). Запомни три места, и дальше всё будет понятно, куда что писать.</p>
+      <ul style="margin:0;padding-left:20px;color:var(--soft);font-size:17px;line-height:1.6">
+        <li style="margin-bottom:8px"><b style="color:var(--ink)">Команды со слэшем</b> (это <code>/model</code>, <code>/agents</code>, <code>/status</code>, <code>/effort</code>) пиши в поле чата Claude Code внизу панели, там где написано Queue another message. Пишешь команду и жмёшь Enter.</li>
+        <li style="margin-bottom:8px"><b style="color:var(--ink)">Обычные команды</b> (например <code>claude --version</code>) пиши во встроенном терминале VS Code. Открыть его: верхнее меню Terminal, пункт New Terminal. Или сочетание <kbd style="height:26px;min-width:24px;font-size:13px">Ctrl</kbd> и клавиша с тильдой слева от единицы.</li>
+        <li><b style="color:var(--ink)">Файлы агентов</b> создавай прямо в VS Code: слева проводник файлов, правый клик, New File. Это обычные текстовые файлы, ничего страшного.</li>
+      </ul>
+    </section>
+
     <h2 class="sec-h" style="margin-top:8px">Этап 1. Подключить Fable 5</h2>
 
     <section class="step" id="step1">
@@ -216,7 +226,7 @@
         <h2>Проверь версию Claude Code<span class="sub">Fable 5 нужна версия 2.1.170 и новее</span></h2>
       </div>
       <div class="body">
-        <p>Открой терминал, где ты запускаешь Claude Code, и вставь команду. Она покажет номер версии.</p>
+        <p>Открой встроенный терминал VS Code: верхнее меню Terminal, пункт New Terminal (или <kbd style="height:26px;min-width:24px;font-size:13px">Ctrl</kbd> и клавиша с тильдой). Внизу появится окно для команд. Вставь туда команду и нажми Enter, она покажет номер версии.</p>
         <figure class="code">
           <p class="code-cap">Показывает установленную версию Claude Code.</p>
           <div class="code-box">
@@ -225,7 +235,7 @@
           </div>
         </figure>
         <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> в ответ появится номер, например 2.1.170 или выше. Если число такое же или больше, всё готово, иди дальше.</span></div>
-        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Версия старее?</b>Обнови Claude Code командой <code>claude update</code> и снова проверь версию.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Версия старее?</b>Обнови Claude Code командой <code>claude update</code> в том же терминале VS Code и снова проверь версию.</span></div>
       </div>
     </section>
 
@@ -235,7 +245,7 @@
         <h2>Включи Fable 5 командой /model<span class="sub">самый быстрый способ</span></h2>
       </div>
       <div class="body">
-        <p>Запусти Claude Code как обычно. Внутри его окна набери одну из команд. Первая откроет список моделей, вторая сразу выберет Fable 5.</p>
+        <p>В поле чата Claude Code внизу панели (там где Queue another message) набери одну из команд и нажми Enter. Первая откроет список моделей, вторая сразу выберет Fable 5.</p>
         <figure class="code">
           <p class="code-cap">Открывает список моделей для выбора.</p>
           <div class="code-box">
@@ -282,8 +292,9 @@
         <h2>Закрепи Fable 5 навсегда<span class="sub">чтобы не выбирать каждый раз</span></h2>
       </div>
       <div class="body">
-        <p>Способ из шага 2 держится, пока ты не переключишь модель. Если хочешь, чтобы Fable 5 включалась сама при каждом запуске, пропиши её в файле настроек. Файл лежит по адресу <code>~/.claude/settings.json</code>. Значок <code>~</code> это твоя домашняя папка.</p>
-        <p>Открой этот файл и впиши внутрь строку с моделью. Если файла ещё нет, создай его с таким содержимым:</p>
+        <p>Способ из шага 2 держится, пока ты не переключишь модель. Чтобы Fable 5 включалась сама всегда, есть два пути, оба без чёрного терминала.</p>
+        <p><b>Путь простой, советую его.</b> Открой список <code>/model</code> как в шаге 2, наведись на Fable 5 и нажми Enter, а не s. Enter сохраняет модель по умолчанию, и дальше Claude Code стартует сразу на ней.</p>
+        <p><b>Путь через файл настроек.</b> Открой в VS Code файл <code>~/.claude/settings.json</code> (значок <code>~</code> это твоя домашняя папка). Если файла нет, создай его в VS Code через New File. Впиши внутрь такую строку с моделью:</p>
         <figure class="code">
           <p class="code-cap">Содержимое файла ~/.claude/settings.json: Fable 5 станет моделью по умолчанию.</p>
           <div class="code-box">
@@ -293,16 +304,9 @@
 }</code></pre>
           </div>
         </figure>
-        <p>Есть ещё два быстрых способа на одну сессию, без правки файла. Первый: запустить Claude Code сразу на Fable. Второй: задать модель через переменную окружения перед запуском.</p>
-        <figure class="code">
-          <p class="code-cap">Запуск Claude Code сразу на Fable 5 (только эта сессия).</p>
-          <div class="code-box">
-            <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
-            <pre><code>claude --model fable</code></pre>
-          </div>
-        </figure>
-        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> после правки файла закрой и снова запусти Claude Code. Он стартует уже на Fable 5, ничего выбирать не надо.</span></div>
-        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Кто кого перебивает</b>Если способы спорят, порядок такой: переменная окружения важнее флага при запуске, флаг важнее файла настроек, файл важнее модели по умолчанию для твоего тарифа. Проще всего держать одну строку в settings.json и не путаться.</span></div>
+        <div class="note info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5h.01"/></svg><span><b>Если запускаешь из терминала</b>Тем, кто иногда стартует Claude Code командой во встроенном терминале VS Code, можно задать модель сразу: <code>claude --model fable</code>. Внутри панели это не нужно, хватает пути через /model.</span></div>
+        <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> начни новую сессию кнопкой New session слева вверху (или перезапусти VS Code). Claude Code стартует уже на Fable 5, выбирать ничего не надо.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Что проще</b>Не держи в голове все способы. Выбери один: либо нажимать Enter на Fable 5 в списке /model, либо одна строка в settings.json. Оба делают Fable 5 моделью по умолчанию.</span></div>
       </div>
     </section>
 
@@ -312,7 +316,7 @@
         <h2>Убедись, что активна именно Fable 5<span class="sub">одна команда проверки</span></h2>
       </div>
       <div class="body">
-        <p>Чтобы не гадать, набери внутри Claude Code команду статуса. Она покажет версию, текущую модель и твой аккаунт.</p>
+        <p>Чтобы не гадать, набери в поле чата Claude Code команду статуса и нажми Enter. Она покажет версию, текущую модель и твой аккаунт.</p>
         <figure class="code">
           <p class="code-cap">Показывает версию, активную модель и аккаунт.</p>
           <div class="code-box">
@@ -360,7 +364,7 @@
           <li style="margin-bottom:7px"><code>~/.claude/agents/</code> общие агенты, видны во всех проектах.</li>
           <li><code>.claude/agents/</code> внутри папки проекта, эти агенты живут только в нём и сохраняются в git вместе с кодом.</li>
         </ul>
-        <p>Создай общую папку для агентов одной командой в терминале:</p>
+        <p>Создай общую папку для агентов. Открой встроенный терминал VS Code (меню Terminal, пункт New Terminal) и вставь команду:</p>
         <figure class="code">
           <p class="code-cap">Создаёт папку для твоих общих агентов.</p>
           <div class="code-box">
@@ -369,6 +373,7 @@
           </div>
         </figure>
         <div class="seen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg><span><b>Как понять, что вышло:</b> команда молча выполнится, без ошибки. Папка готова. Если папка уже была, тоже ничего страшного, ошибки не будет.</span></div>
+        <div class="note tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.2 1 2v.3h6v-.3c0-.8.4-1.5 1-2A7 7 0 0 0 12 2z"/></svg><span><b>Можно ещё проще</b>Папку можно вообще не создавать руками. Перейди сразу к шагу 8 и создай агента через <code>/agents</code> в чате, приложение само сделает и папку, и файл. Способ с файлом ниже нужен, если хочешь тонко всё настроить.</span></div>
       </div>
     </section>
 
@@ -379,7 +384,7 @@
       </div>
       <div class="body">
         <p>Каждый агент это один файл с расширением <code>.md</code>. Внутри две части. Сверху между строками из трёх дефисов идёт <span class="term" title="Frontmatter: короткий блок настроек в самом верху файла между строками из трёх дефисов. Задаёт имя агента, модель, права.">заголовок настроек</span> (имя, модель, права). Ниже обычными словами роль агента.</p>
-        <p>Создай файл <code>~/.claude/agents/architect.md</code> и вставь в него это. Обязательные строки только name и description, остальное по желанию.</p>
+        <p>Создай файл прямо в VS Code: слева в проводнике открой папку <code>~/.claude/agents</code>, правый клик, New File, назови <code>architect.md</code>. Вставь в него текст ниже и сохрани (<kbd style="height:26px;min-width:24px;font-size:13px">Cmd</kbd> и <kbd style="height:26px;min-width:24px;font-size:13px">S</kbd>). Обязательные строки только name и description, остальное по желанию.</p>
         <figure class="code">
           <p class="code-cap">Файл ~/.claude/agents/architect.md. Агент-архитектор на Fable 5 с глубоким мышлением.</p>
           <div class="code-box">
@@ -420,11 +425,11 @@ memory: user
         <p>Агент есть, теперь его надо позвать. Способа три, выбирай удобный.</p>
         <ul style="margin:0 0 14px;padding-left:20px;color:var(--soft);font-size:17px;line-height:1.6">
           <li style="margin-bottom:8px"><b style="color:var(--ink)">Сам подберёт.</b> Просто опиши задачу словами. Если она подходит под роль агента из его description, Claude Code сам его выберет.</li>
-          <li style="margin-bottom:8px"><b style="color:var(--ink)">Назови прямо.</b> Напиши в разговоре: «Используй architect и спроектируй структуру платформы». Или через собаку: <code>@architect посмотри на это</code>.</li>
-          <li><b style="color:var(--ink)">Запусти всю сессию агентом.</b> В терминале командой ниже.</li>
+          <li style="margin-bottom:8px"><b style="color:var(--ink)">Назови прямо.</b> Напиши в поле чата Claude Code: «Используй architect и спроектируй структуру платформы». Или через собаку: <code>@architect посмотри на это</code>.</li>
+          <li><b style="color:var(--ink)">Запусти всю сессию агентом.</b> Во встроенном терминале VS Code командой ниже, для тех, кто любит запуск командой.</li>
         </ul>
         <figure class="code">
-          <p class="code-cap">Запускает Claude Code сразу в роли агента architect.</p>
+          <p class="code-cap">Запускает Claude Code в роли агента architect (во встроенном терминале VS Code).</p>
           <div class="code-box">
             <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
             <pre><code>claude --agent architect</code></pre>
@@ -440,7 +445,7 @@ memory: user
         <h2>Управляй агентами через /agents<span class="sub">создать, поправить, удалить</span></h2>
       </div>
       <div class="body">
-        <p>Внутри Claude Code набери команду. Откроется менеджер агентов с двумя вкладками: Running (кто работает сейчас) и Library (все доступные).</p>
+        <p>В поле чата Claude Code набери команду и нажми Enter. Откроется менеджер агентов с двумя вкладками: Running (кто работает сейчас) и Library (все доступные).</p>
         <figure class="code">
           <p class="code-cap">Открывает менеджер агентов.</p>
           <div class="code-box">
@@ -483,7 +488,7 @@ memory: user
 
     <section class="card">
       <p class="panel-title" style="color:var(--ink);border:0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Готовая команда агентов под проект</p>
-      <p style="margin:0 0 6px">Ниже четыре готовых агента. Архитектор у тебя уже есть из шага 6. Добавь ещё трёх: дизайнер, проверяющий и исследователь. Каждый файл клади в <code>~/.claude/agents/</code>.</p>
+      <p style="margin:0 0 6px">Ниже четыре готовых агента. Архитектор у тебя уже есть из шага 6. Добавь ещё трёх: дизайнер, проверяющий и исследователь. Каждый создавай как в шаге 6: в проводнике VS Code New File с именем агента, вставь текст, сохрани. Или через <code>/agents</code> в чате. Файлы кладём в <code>~/.claude/agents/</code>.</p>
     </section>
 
     <section class="step">
@@ -596,18 +601,18 @@ effort: high
       <div class="body">
         <p>Вот как это выглядит на деле, когда проектируешь платформу «Архитектура сознания». По порядку.</p>
         <ol style="margin:0 0 14px;padding-left:22px;color:var(--ink);font-size:17.5px;line-height:1.65">
-          <li style="margin-bottom:9px">Запусти Claude Code в папке проекта на Fable 5: <code>claude --model fable</code>.</li>
-          <li style="margin-bottom:9px">Задай глубокое мышление: набери <code>/effort xhigh</code>.</li>
+          <li style="margin-bottom:9px">Открой папку проекта в VS Code и включи Fable 5: в чате Claude Code набери <code>/model fable</code>.</li>
+          <li style="margin-bottom:9px">Задай глубокое мышление: в чате набери <code>/effort xhigh</code>.</li>
           <li style="margin-bottom:9px">Позови исследователя: «Используй researcher, разбери, как устроена платформа с курсами вроде GetCourse, и выпиши, что взять для нас».</li>
           <li style="margin-bottom:9px">Позови архитектора: «Используй architect, на основе ресёрча спроектируй архитектуру платформы под много курсов: личный кабинет, роли, прогресс учеников, оплата, структура базы данных».</li>
           <li style="margin-bottom:9px">Позови проверяющего: «Используй reviewer, проверь предложенную архитектуру на слабые места и риски».</li>
           <li>Для сайта KEO GROUP тем же приёмом: «Используй frontend-designer, доведи страницу услуги до премиум-вида», потом reviewer на проверку.</li>
         </ol>
         <figure class="code">
-          <p class="code-cap">Начало сессии под проектирование: запуск на Fable и глубокое мышление.</p>
+          <p class="code-cap">Две строки в чат Claude Code, одна за другой: включить Fable и глубокое мышление.</p>
           <div class="code-box">
             <button class="copy" type="button" data-copy><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Копировать</button>
-            <pre><code>claude --model fable
+            <pre><code>/model fable
 /effort xhigh</code></pre>
           </div>
         </figure>
@@ -622,7 +627,7 @@ effort: high
       <p class="sec-lead">Пять команд, чтобы убедиться, что всё на месте.</p>
       <div class="card">
         <ul class="checklist">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>claude --version</code> версия 2.1.170 или новее.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>claude --version</code> во встроенном терминале VS Code: версия 2.1.170 или новее.</span></li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>/status</code> в строке «Модель» стоит Fable 5.</span></li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>/model</code> Fable 5 выделена в списке.</span></li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg><span><code>/agents</code> видны твои агенты (architect и другие).</span></li>
@@ -663,7 +668,7 @@ effort: high
         <details class="q">
           <summary><span class="qm">?</span>В списке /model нет Fable 5<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
           <div class="ans">
-            <p>Скорее всего старая версия Claude Code. Проверь <code>claude --version</code>, нужна 2.1.170 или новее. Обнови командой <code>claude update</code> и открой /model заново.</p>
+            <p>Скорее всего старая версия Claude Code. Во встроенном терминале VS Code проверь <code>claude --version</code>, нужна 2.1.170 или новее. Обнови там же командой <code>claude update</code> и открой /model заново.</p>
             <p>Ещё проверь, что ты вошёл под своим тарифом Claude (Pro, Max, Team или Enterprise). Команда <code>/status</code> покажет аккаунт.</p>
           </div>
         </details>
@@ -678,14 +683,14 @@ effort: high
           <summary><span class="qm">?</span>Агент не появился в /agents<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
           <div class="ans">
             <p>Проверь, что файл лежит именно в <code>~/.claude/agents/</code> и имя оканчивается на <code>.md</code>. И что в самом верху есть блок между строками из трёх дефисов со строками name и description.</p>
-            <p>Перезапусти Claude Code и снова открой /agents. Новые файлы подхватываются при запуске.</p>
+            <p>Начни новую сессию кнопкой New session слева вверху и снова открой /agents. Новые файлы подхватываются при старте сессии.</p>
           </div>
         </details>
         <details class="q">
           <summary><span class="qm">?</span>Настройки в settings.json не применяются<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
           <div class="ans">
             <p>Частая причина, забытая запятая или кавычка в файле. Внутри должно быть ровно так: фигурные скобки, а внутри <code>"model": "fable"</code>. Лишних запятых в конце быть не должно.</p>
-            <p>Ещё проверь, не задана ли переменная окружения ANTHROPIC_MODEL, она перебивает файл. И перезапусти Claude Code после правки.</p>
+            <p>Ещё проверь, не задана ли переменная окружения ANTHROPIC_MODEL, она перебивает файл. И начни новую сессию после правки.</p>
           </div>
         </details>
         <details class="q">

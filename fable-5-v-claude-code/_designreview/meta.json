@@ -1,0 +1,22 @@
+{
+  "url": "file:///Users/q8111706yandex.ru/.claude/skills/guide/out/fable-5-v-claude-code/index.html",
+  "label": "fable",
+  "shots": [
+    {
+      "name": "desktop",
+      "screen": "/Users/q8111706yandex.ru/.claude/skills/guide/out/fable-5-v-claude-code/_designreview/desktop-screen.png",
+      "full": "/Users/q8111706yandex.ru/.claude/skills/guide/out/fable-5-v-claude-code/_designreview/desktop-full.png",
+      "scrollWidth": 1440,
+      "clientWidth": 1440,
+      "overflowX": false
+    },
+    {
+      "name": "mobile390",
+      "screen": "/Users/q8111706yandex.ru/.claude/skills/guide/out/fable-5-v-claude-code/_designreview/mobile390-screen.png",
+      "full": "/Users/q8111706yandex.ru/.claude/skills/guide/out/fable-5-v-claude-code/_designreview/mobile390-full.png",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "overflowX": false
+    }
+  ]
+}
